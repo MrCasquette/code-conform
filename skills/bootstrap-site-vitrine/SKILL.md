@@ -111,7 +111,14 @@ Puis QCM groupé sur les choix structurés. Les options peuvent **varier selon l
 - **Framework des islands interactives** : React 19 (default code-conform) / Vue 3 / Svelte 5 / Aucun (Astro pur).
 - **i18n** : Multilingue ? Langues + default. Default proposé : `fr` seul, sinon selon métier.
 - **Contenu** : Statique MDX (default ≤ 10 pages immuables) / CMS headless (si client édite — Directus suggestion, ouvrir au choix si signal). Pour le choix CMS, cf. BACKLOG (discussion ouverte sur le caractère arbitraire de Directus default).
-- **Adapter de rendu** : Static / Node SSR / Adapter hébergeur. Inféré depuis présence formulaires + besoin Docker.
+- **Adapter de rendu** : Static / Node SSR / Adapter hébergeur. Grille de tri :
+  - **Astro Static** (`@astrojs/static`) — contenu fixé au build, formulaires inexistants ou via service tiers (Formspree, mailto), pas de personnalisation par utilisateur.
+  - **Astro Node SSR** (`@astrojs/node` standalone) — formulaires traités côté serveur (SMTP, base), CMS rendu à la requête, i18n avec négociation Accept-Language, déploiement Docker. **Pages restent majoritairement statiques**, juste 1-3 routes dynamiques.
+  - **Adapter hébergeur** (Vercel, Netlify, Cloudflare) — uniquement si plateforme connue à l'avance. Sinon Node SSR portable.
+
+**Bascule honnête hors scope** : si le métier décrit dépasse une vitrine (app interactive permanente avec sessions/auth, dashboards, multi-rôles, billing récurrent, catalogue produits + panier + paiement, app B2B multi-tenant), **n'essaie pas d'adapter Astro pour ça**. Annonce honnêtement : *"Ce que tu décris dépasse le scope `bootstrap-site-vitrine`. Tu as besoin de <profil détecté>. Skill dédié : `/bootstrap-saas` ou `/bootstrap-ecommerce` (à venir). En attendant je ne génère rien."* Pas de *"je m'adapte"*, pas de *"je débrouille"*.
+
+Critère : *"site avec quelques zones dynamiques"* → vitrine SSR ; *"app interactive avec une zone vitrine accessoire"* → hors scope, bascule.
 - **Posture tokens** : A (noms-marque, si charte couleur donnée) / B (sémantique, default sinon). Cf. `atomic-design.md` §4.
 - **Linter** : Biome (default) / ESLint+Prettier (sur signal).
 
@@ -368,7 +375,7 @@ Crée à la racine avec :
 ## Anti-patterns du skill
 
 - ✗ Tout en React (`client:load` partout) — perd l'avantage Astro. Default = .astro statique, .tsx uniquement pour interactivité réelle.
-- ✗ Forcer Next.js pour un cas vitrine. Si l'utilisateur insiste, demander signal concret (SSR partout ? Server Components ? Stack JS imposée ?) — sinon Astro reste.
+- ✗ **Basculer vers Next/Nuxt par préférence framework**. Arguments non valides : *"je connais mieux React"* (Astro supporte React 19 en islands), *"Next est plus populaire / moderne"* (argument de mode), *"Next a plus d'écosystème"* (vrai mais signal de scope hors-vitrine, donc bascule vers `/bootstrap-saas` ou `/bootstrap-ecommerce` à venir, pas Next "en mode vitrine"). Legit signal = besoin Server Components/Server Actions/streaming SSR pour CE métier précis — mais alors on a quitté le scope vitrine et la bascule de skill est obligatoire (cf. Étape 2 / Phase 3 "Bascule honnête hors scope").
 - ✗ Ajouter i18next, react-i18next sur un site bilingue minimal — l'i18n natif Astro + JSON suffit.
 - ✗ Créer `src/services/`, `src/repositories/` — slicing horizontal (philosophy §6).
 - ✗ Ajouter Storybook/Histoire par défaut. Pour 5-10 pages vitrine, l'inspection visuelle au dev server suffit.
@@ -378,7 +385,9 @@ Crée à la racine avec :
 
 ## Out of scope (renvoi)
 
-- **Application interactive complète** (auth, dashboards, multi-rôles) → `/bootstrap-saas`.
+- **App SaaS B2B** (multi-tenant, abonnements, dashboards, rôles, billing récurrent) → `/bootstrap-saas` (à venir).
+- **E-commerce** (catalogue, panier, checkout, paiement one-shot, gestion commandes/stock) → `/bootstrap-ecommerce` (à venir).
+- **Webapp interactive non-saas, non-ecommerce** (outil interne, collab tool, app pro) → pas de skill dédié encore, refuser honnêtement et inviter l'utilisateur à cadrer hors de ce skill.
 - **Audit d'un site vitrine existant** → `/audit-site-vitrine`.
 - **Direction artistique / brand design** (palette identitaire, typographie character, ambiance) → `/design-system` (à venir) — à invoquer quand brand mûr.
 - **CLI** → `/bootstrap-cli`.
