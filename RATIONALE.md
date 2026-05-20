@@ -164,6 +164,24 @@ Ces alternatives sont écartées par **conception**, pas par hasard. Les réintr
 
 ---
 
+## 9bis. Économie d'instruction dans les skills — préférer reformulation à ajout
+
+**Principe émergé en calibration** (test 4, 2026-05-20) : avant d'ajouter une règle, phase ou bullet à un `SKILL.md`, vérifier si une **reformulation** d'une règle existante couvre le besoin. Si oui, reformuler. Sinon seulement, ajouter.
+
+**Pourquoi** : chaque instruction supplémentaire dans un SKILL.md a un coût en **attention sur la fin de session** — c'est précisément le moment où la dilution de contexte mord (cf. §12). Une règle bien formulée vaut mieux que deux règles mal alignées.
+
+**Exemple concret traité** : friction observée — *"Confirme ou ajuste avant les choix restants"* (Phase 3) annonçait une pause que le LLM ne tenait pas (enchaînait direct le QCM). Deux options envisagées :
+- (A) Étanchéifier en sous-phases 3a/3b avec point d'arrêt explicite. **+1 phase, +instructions, coût attention.**
+- (B) Reformuler la phrase pour qu'elle n'annonce plus de pause inexistante : *"Je pose les choix restants. L'ensemble sera ré-ouvert pour validation finale (Phase 4) avant scaffold."* **Zéro ligne ajoutée. Phase 4 fait déjà le filet.**
+
+Choix retenu : (B). La Phase 4 (récap + validation explicite) couvre déjà le besoin sémantique de "pouvoir corriger l'inférence" — l'utilisateur sait que sa fenêtre arrive, le LLM ne ment plus.
+
+**Cas où ajouter est justifié** : quand la fonction nouvelle est **distincte** de l'existant (ex: Phase 2 acquittement métier — sans elle une mécompréhension métier se propage silencieusement, aucune phase existante ne couvre). Quand c'est juste une **séquence sémantique mal exprimée**, reformulation suffit.
+
+**Application au design** : ce principe est cohérent avec philosophy §4 (filtre fondamental — *"version minimale qui marche"*) appliqué récursivement au skill lui-même, pas seulement au code généré.
+
+---
+
 ## 10. Limites et zones non-traitées
 
 Reconnaissance honnête des angles qui ne sont **pas** couverts par le système actuel :

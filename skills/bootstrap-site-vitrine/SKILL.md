@@ -102,7 +102,7 @@ Format type :
 > - Formulaires probables : <inférés du contexte, ex: contact ou réservation>
 > - Adapter probable : <Static si contenu pur, Node SSR si formulaires serveur>
 >
-> Confirme ou ajuste cette base avant que je pose les choix techniques restants.
+> Je pose maintenant les choix techniques restants. L'ensemble (inférence + choix) sera ré-ouvert pour validation finale (Phase 4) avant scaffold.
 
 Puis QCM groupé sur les choix structurés. Les options peuvent **varier selon le métier** (ex: ne pas proposer "Static" si le métier implique manifestement un formulaire serveur — propose Node SSR directement avec justification).
 

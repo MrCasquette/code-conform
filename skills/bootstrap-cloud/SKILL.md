@@ -101,7 +101,7 @@ Format type :
 > - DB probable : <ex: PostgreSQL si relations ; SQLite si selfhost mono-process ; pgvector si IA>
 > - Contrat inter-couches : <inféré depuis combinaison stack>
 >
-> Confirme ou ajuste avant que je pose les choix non inférables.
+> Je pose maintenant les choix techniques restants. L'ensemble (inférence + choix) sera ré-ouvert pour validation finale (Phase 4) avant scaffold.
 
 **Q-techniques modèles** (à adapter au métier, ne propose pas tout systématiquement) :
 

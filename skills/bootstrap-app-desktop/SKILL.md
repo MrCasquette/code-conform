@@ -105,7 +105,7 @@ Format type :
 > - IPC probable : <commands ciblées si besoins natifs, sinon aucune>
 > - Plateformes probables : <macOS+Linux si solo, +Windows si distribution large>
 >
-> Confirme ou ajuste avant que je pose les choix techniques restants.
+> Je pose maintenant les choix techniques restants. L'ensemble (inférence + choix) sera ré-ouvert pour validation finale (Phase 4) avant scaffold.
 
 **Q-techniques modèles** (à adapter au métier) :
 
