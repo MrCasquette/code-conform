@@ -231,17 +231,21 @@ Ces deux modes correspondent aux skills de cadrage (`bootstrap-*`, `audit-*`). L
 
 Le LLM a un biais structurel : *tracer tout schuss* pour livrer vite. Cela produit des questions bundlées, des récaps prématurés, des scaffolds anticipés. Le phasage explicite ci-dessous est la **contre-mesure** qui impose un rythme step-by-step.
 
-1. **Phase 1 — Métier (texte libre, bloquante).** Pose **une seule** question ouverte sur l'activité, la cible, l'intention. Pas de QCM technique en parallèle. Attends la réponse complète. La question doit être **pure métier** : aucun artefact technique mentionné (pas de "combien de pages", "quels formulaires", "quelle stack"). Le métier décrit *quoi* et *pourquoi*, jamais *comment*.
+1. **Phase 1 — Récit métier (texte libre, bloquante).** Pose **une seule** question nue, sans bullets ni sous-questions ni exemples qui orientent. L'utilisateur structure son récit ; tu écoutes. Aucun QCM technique en parallèle. Aucun artefact technique mentionné (pas de "combien de pages", "quels formulaires", "quelle stack"). Le métier décrit *quoi* et *pourquoi*, jamais *comment*. Maintiens une **grille d'écoute interne** (non exposée) pour vérifier que tu captures les angles principaux (de quoi il s'agit / pour qui / ce que ça doit faire). Relance **une seule fois maximum** si un angle principal est absent au point de bloquer la suite — jamais "parce que plus de contexte serait mieux".
 
-2. **Phase 2 — Technique adaptée (après réponse Phase 1).** Construis les questions techniques en **t'appuyant sur le métier reçu**. Les options proposées peuvent varier selon le contexte métier (un site éditorial multi-auteur n'oriente pas vers les mêmes choix qu'une présentation de freelance). Annonce d'abord ton **inférence depuis le métier** ("vu ce que tu décris, je vois X pages probables, Y formulaires probables, stack Z adaptée — confirme ou ajuste"), puis pose les choix techniques restants qui ne peuvent être inférés. Utilise un QCM groupé (ex: `AskUserQuestion` côté Claude Code) pour les choix structurés, pas de la prose libre.
+2. **Phase 2 — Acquittement de compréhension métier (prose courte, bloquante).** Restitue ce que tu as compris en **2-3 phrases de prose libre** — pas de bullets, pas de liste structurée (qui décompose le récit et le déforme). Demande confirmation ou correction. Bloquant. C'est la phase qui te permet de **valider ton modèle mental du métier** avant qu'il oriente les choix techniques. Sans elle, une mécompréhension métier se propage silencieusement dans les choix techniques et n'apparaît qu'au récap final — trop tard.
 
-3. **Phase 3 — Récap puis validation.** Récap uniquement quand **toutes** les réponses sont reçues. Présente la liste exhaustive des décisions. Demande validation explicite avant Étape de génération.
+3. **Phase 3 — Technique adaptée (après Phase 2 validée).** Construis les questions techniques en **t'appuyant sur le métier acquitté**. Annonce d'abord ton **inférence depuis le métier** ("vu ce que tu décris, je vois X pages probables, Y formulaires probables, stack Z adaptée — confirme ou ajuste"), puis pose les choix techniques restants qui ne peuvent être inférés. Utilise un QCM groupé (ex: `AskUserQuestion` côté Claude Code) pour les choix structurés, pas de la prose libre. Les options peuvent varier selon le contexte métier.
 
-4. **Phase 4 — Génération.** Seulement après validation explicite de la Phase 3.
+4. **Phase 4 — Récap puis validation.** Récap uniquement quand **toutes** les réponses techniques sont reçues. Présente la liste exhaustive des décisions. Demande validation explicite avant la phase de génération.
 
-**Anti-pattern à reconnaître** : si tu te surprends à formuler *"je récapitule"* alors qu'une question est encore ouverte, ou à présenter un QCM technique en même temps qu'une question métier libre, **stop** — tu enfreins le phasage.
+5. **Génération.** Seulement après validation explicite de la Phase 4.
 
-**Adaptation dynamique** : les questions techniques de Phase 2 ne sont **pas figées d'avance**. Elles sont **construites** au moment où tu les poses, informées par le métier. Un skill peut lister des Q-modèles, mais les options proposées et leur pertinence dépendent du contexte métier capté. Une option non pertinente au métier ne doit pas être proposée comme choix — c'est du bruit.
+**Anti-pattern à reconnaître** : si tu te surprends à formuler *"je récapitule"* alors qu'une question est encore ouverte, à présenter un QCM technique en même temps qu'une question métier libre, ou à transformer l'acquittement de Phase 2 en bullets structurés, **stop** — tu enfreins le phasage.
+
+**Hors scope ferme en Phase 1** : ne pose **jamais** de questions sur le budget, les délais, le planning de livraison. Ce n'est pas avec ça qu'on bootstrap. Pas non plus de demande de KPI, personas, user stories, critères de succès mesurables — c'est du vocabulaire de framework qui ne sert pas l'arbitrage technique.
+
+**Adaptation dynamique** : les questions techniques de Phase 3 ne sont **pas figées d'avance**. Elles sont **construites** au moment où tu les poses, informées par le métier. Un skill peut lister des Q-modèles, mais les options proposées et leur pertinence dépendent du contexte métier capté. Une option non pertinente au métier ne doit pas être proposée comme choix — c'est du bruit.
 
 ---
 

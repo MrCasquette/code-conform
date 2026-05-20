@@ -44,31 +44,56 @@ Annoncer une phrase de cadrage : *"Je vais créer un site vitrine Astro 5 + Reac
 
 ## Étape 2 — Questions de cadrage
 
-Posture interactive (philosophy §1 et §8 INVARIANT). Le cadrage suit un **phasage strict** : métier → technique adaptée → récap → génération. Pas de bundle, pas de récap prématuré.
+Le cadrage se déroule en **4 phases internes** à cette étape, avant l'Étape 3 (génération). Posture interactive (philosophy §1 et §8 INVARIANT). **Phasage strict** : récit → acquittement → technique adaptée → récap. Pas de bundle, pas de récap prématuré.
 
-**Hard rule (philosophy §1 INVARIANT bloquant)** : aucune génération de fichier tant qu'une question reste ouverte. Si l'utilisateur veut "passer", ré-énonce et signale que ça bloque.
+**Hard rule (philosophy §1 INVARIANT bloquant)** : aucune génération de fichier tant qu'une phase n'est pas validée. Si l'utilisateur veut "passer", ré-énonce et signale que ça bloque.
 
-### Phase 1 — Métier (texte libre, bloquante, ne pose aucune autre question pendant ce temps)
+### Phase 1 — Récit du projet (texte libre, bloquante)
 
-**Q1 — Description métier (pure)**
+**Q1 — Question unique**
 
-Pose **uniquement** cette question et attends la réponse. Aucun QCM technique en parallèle, aucune mention d'artefacts techniques (pages, formulaires, stack).
+Pose **exactement** ceci et attends la réponse :
+
+> Dis m'en plus sur les aspects métier du site que tu veux construire.
+
+Aucune sous-question, aucun bullet, aucune liste d'exemples. La question doit rester nue. C'est l'utilisateur qui structure son récit, pas toi.
+
+**Grille d'écoute interne** (jamais exposée à l'utilisateur)
+
+À la réception, vérifie si tu peux identifier les trois angles principaux. Si oui même partiellement, passe en Phase 2.
+
+1. **De quoi il s'agit** — activité, domaine, contexte, vocabulaire propre.
+2. **Pour qui** — qui porte le projet, qui en bénéficie. Distingue si commanditaire ≠ utilisateur final (mais ne relance pas sur cette nuance ; capture comme zone à valider en Phase 2).
+3. **Ce que ça doit faire ou permettre** — l'intention concrète, l'action ou la valeur produite.
+
+**Grille d'écoute additionnelle** spécifique site vitrine — rien de plus. Pas de KPI, pas de personas, pas de user stories, pas de critère de succès mesurable.
+
+**Au passage**, capte sans questionner : contraintes légales, stack imposée, références visuelles. Si présent, retiens. Si absent, **reste absent — pas de relance sur ces axes**.
+
+**Hors scope ferme — ne pose JAMAIS ces questions en Phase 1** : budget, délais, planning de livraison. Ce n'est pas avec ça qu'on bootstrap.
+
+**Règle de relance — UNIQUE et restrictive**
+
+- Maximum **une** relance. Pas deux, pas "encore une dernière".
+- Relance seulement si **un des trois angles principaux est absent au point de bloquer Phase 2**. Pas si "ce serait mieux d'en savoir plus".
+- La relance est **une seule question courte** ciblée sur le manque le plus critique. Pas de liste, pas de bullets, pas plusieurs angles à la fois.
+- Après la relance, peu importe la qualité de la réponse : **Phase 2 obligatoire**, avec hypothèse explicite si flou subsiste (l'utilisateur corrigera en Phase 2).
+
+### Phase 2 — Acquittement de compréhension métier (prose courte, bloquante)
+
+Avant tout choix technique, restitue ce que tu as compris du métier en **2-3 phrases de prose libre** — pas de bullets, pas de liste structurée. C'est un acquittement, pas un inventaire.
 
 Format type :
 
-> Décris l'activité du projet (la tienne ou celle de ton client) en 2-4 phrases :
-> - Qui es-tu / qui est le client ? Quelle activité ?
-> - Qui visite le site (visiteur cible) ?
-> - Qu'est-ce que tu veux qu'il retienne ou qu'il fasse en repartant ?
-> - Inspirations visuelles ou de structure si tu en as (liens, références) — optionnel.
->
-> Pas besoin de parler pages, formulaires, technologies — je déduirai en phase 2 et te ferai valider.
+> Si j'ai bien compris : <2-3 phrases reformulant le métier, la cible, l'intention, dans tes mots>. C'est juste ?
 
-Pose des sous-questions métier supplémentaires uniquement si la réponse laisse des zones floues critiques (granularité du domaine, acteurs avec rôles différenciés, invariants métier explicites). Cf. philosophy §8 "Toujours demander, sur le métier".
+Attends confirmation ou correction. **Bloquant.** Si correction, intègre puis re-acquitte (court). Quand l'utilisateur valide, passe en Phase 3.
 
-### Phase 2 — Technique adaptée (après Phase 1 close)
+**Anti-pattern** : transformer cette restitution en liste à puces structurée — c'est une compression mécanique qui déforme le récit. Garde la prose, courte.
 
-À partir du métier reçu, **annonce d'abord ton inférence**, puis pose en QCM (via `AskUserQuestion` côté Claude Code) les choix qui ne peuvent être inférés.
+### Phase 3 — Technique adaptée (après Phase 2 validée)
+
+À partir du métier acquitté, **annonce d'abord ton inférence**, puis pose en QCM (via `AskUserQuestion` côté Claude Code) les choix qui ne peuvent être inférés.
 
 Format type :
 
@@ -79,7 +104,7 @@ Format type :
 >
 > Confirme ou ajuste cette base avant que je pose les choix techniques restants.
 
-Puis QCM groupé sur les choix structurés. Les options peuvent **varier selon le métier** (ex: ne pas proposer "Static" comme option si le métier implique manifestement un formulaire serveur — propose Node SSR directement avec justification).
+Puis QCM groupé sur les choix structurés. Les options peuvent **varier selon le métier** (ex: ne pas proposer "Static" si le métier implique manifestement un formulaire serveur — propose Node SSR directement avec justification).
 
 **Q-techniques modèles** (à adapter au métier) :
 
@@ -90,9 +115,9 @@ Puis QCM groupé sur les choix structurés. Les options peuvent **varier selon l
 - **Posture tokens** : A (noms-marque, si charte couleur donnée) / B (sémantique, default sinon). Cf. `atomic-design.md` §4.
 - **Linter** : Biome (default) / ESLint+Prettier (sur signal).
 
-### Phase 3 — Récap puis validation
+### Phase 4 — Récap puis validation
 
-**Pas de récap tant que Phase 2 incomplète.** Quand toutes les réponses sont reçues, présente la synthèse exhaustive et **demande validation explicite** avant Étape 3.
+**Pas de récap tant que Phase 3 incomplète.** Quand toutes les réponses techniques sont reçues, présente la synthèse exhaustive et **demande validation explicite** avant Étape 3.
 
 Format type :
 
@@ -110,6 +135,18 @@ Format type :
 > Je procède au scaffold sur cette base ?
 
 Attends "oui / valide / go" explicite. Pas de procédure tacite.
+
+### Anti-patterns du cadrage
+
+- ✗ Relancer parce que "plus de contexte serait mieux" (Phase 1).
+- ✗ Relancer avec une liste de questions (Phase 1).
+- ✗ Exposer la grille d'écoute à l'utilisateur (Phase 1).
+- ✗ Demander budget, délais, planning (Phase 1, hors scope ferme).
+- ✗ Demander un KPI, des personas, des user stories, des critères de succès mesurables (Phase 1).
+- ✗ Demander la stack technique en Phase 1 (réservé à Phase 3).
+- ✗ Transformer l'acquittement (Phase 2) en liste à puces structurée.
+- ✗ Sauter Phase 2 et passer directement aux choix techniques.
+- ✗ Récapituler les choix techniques (Phase 4) avant que tous soient reçus.
 
 ## Étape 3 — Génération de la structure
 

@@ -38,30 +38,60 @@ Trois principes :
 
 ## Étape 2 — Cadrage interactif
 
-Cadrage en **phasage strict** (philosophy §8 INVARIANT) : métier → technique adaptée → récap → génération. Pas de bundle, pas de récap prématuré. Particulièrement critique ici où une question non répondue compromet la cohérence système. Capture chaque décision dans `docs/conventions.md` au fil de l'eau.
+Le cadrage se déroule en **4 phases internes** à cette étape, avant l'Étape 3 (génération). **Phasage strict** (philosophy §8 INVARIANT) : récit → acquittement → technique adaptée → récap. Pas de bundle, pas de récap prématuré. Particulièrement critique ici où une question non répondue compromet la cohérence système. Capture chaque décision dans `docs/conventions.md` au fil de l'eau.
 
-**Hard rule (philosophy §1 INVARIANT bloquant)** : aucune génération de fichier tant qu'une question reste ouverte. Pas de *"je commence le squelette, tu me diras après"*.
+**Hard rule (philosophy §1 INVARIANT bloquant)** : aucune génération de fichier tant qu'une phase n'est pas validée. Pas de *"je commence le squelette, tu me diras après"*.
 
-### Phase 1 — Métier (texte libre, bloquante, ne pose aucune autre question pendant ce temps)
+### Phase 1 — Récit du projet (texte libre, bloquante)
 
-**Q1 — Description métier (pure)**
+**Q1 — Question unique**
 
-Pose **uniquement** cette question et attends la réponse. Aucun QCM technique en parallèle, aucune mention d'artefacts techniques (couches, stack, contrats, déploiement).
+Pose **exactement** ceci et attends la réponse :
+
+> Dis m'en plus sur les aspects métier du projet cloud que tu veux construire.
+
+Aucune sous-question, aucun bullet, aucune liste d'exemples. La question doit rester nue.
+
+**Grille d'écoute interne** (jamais exposée à l'utilisateur)
+
+À la réception, vérifie les trois angles principaux. Si oui même partiellement, passe en Phase 2.
+
+1. **De quoi il s'agit** — type d'app, domaine, vocabulaire propre.
+2. **Pour qui** — qui porte / héberge / administre vs qui utilise.
+3. **Ce que ça doit faire ou permettre** — l'intention concrète, le type d'usage attendu.
+
+**Grille d'écoute additionnelle** spécifique cloud / selfhostable :
+- Où ça tourne (selfhost mono-host / multi-host / cloud public si signal).
+- Qui administre (le développeur / un admin tiers).
+- Données sensibles ou pas (impact auth, chiffrement, backup).
+- Type d'usage interface (web / mobile / desktop / API publique) — *côté usage, pas technique*.
+
+**Au passage**, capte sans questionner : volume attendu, références (Navidrome, Mealie, etc.), contraintes de déploiement. Si absent, **reste absent — pas de relance**.
+
+**Hors scope ferme — ne pose JAMAIS ces questions en Phase 1** : budget, délais, planning de livraison.
+
+**Règle de relance — UNIQUE et restrictive**
+
+- Maximum **une** relance. Pas deux.
+- Seulement si un angle principal est absent au point de bloquer Phase 2.
+- Une seule question courte, ciblée sur le manque le plus critique. Pas de liste.
+- Après la relance, peu importe la réponse : **Phase 2 obligatoire** avec hypothèse explicite si flou subsiste.
+
+### Phase 2 — Acquittement de compréhension métier (prose courte, bloquante)
+
+Restitue ce que tu as compris en **2-3 phrases de prose libre** — pas de bullets, pas de liste.
 
 Format type :
 
-> Décris l'app cloud en 3-5 phrases :
-> - Quel problème elle résout, pour qui ?
-> - Comment les utilisateurs interagissent (web seulement ? + mobile ? + desktop ? + API publique ?) — *côté usage, pas côté technique*.
-> - Quel type de données manipule-t-elle (média lourd, contenu textuel, données relationnelles, événements temps réel) ?
-> - Volume attendu (utilisateurs concurrents, taille DB) si tu as une idée.
-> - Inspirations (apps existantes type Navidrome, Mealie, etc.) — optionnel.
->
-> Pas besoin de parler stack, framework, monorepo — je déduirai en phase 2 et te ferai valider.
+> Si j'ai bien compris : <2-3 phrases reformulant le projet, son usage, son intention>. C'est juste ?
 
-### Phase 2 — Technique adaptée (après Phase 1 close)
+Attends confirmation ou correction. **Bloquant.** Si correction, intègre puis re-acquitte (court). Quand validé, passe en Phase 3.
 
-Annonce d'abord ton inférence depuis le métier, puis pose les questions en QCM (`AskUserQuestion`) groupé par batch cohérent (couches, stack, contrats, déploiement).
+**Anti-pattern** : transformer cette restitution en liste à puces structurée.
+
+### Phase 3 — Technique adaptée (après Phase 2 validée)
+
+Annonce d'abord ton inférence depuis le métier acquitté, puis pose les questions en QCM (`AskUserQuestion`) groupé par batch cohérent (couches, stack, contrats, déploiement).
 
 Format type :
 
@@ -154,9 +184,21 @@ INVARIANT : **pas de DTO copié-collé entre couches**. Si l'utilisateur résist
 - Pas de Kubernetes par défaut (overhead injustifié pour selfhost).
 - Secrets : `.env` versionné en `.env.example` uniquement, `.env` réel `.gitignore`.
 
-### Phase 3 — Récap puis validation
+### Phase 4 — Récap puis validation
 
 **Pas de récap tant que les Q couches/stack/contrats/déploiement ne sont pas toutes répondues.** Présente la synthèse exhaustive (couches actives + stack par couche + contrat inter-couches + monorepo tooling + auth + déploiement) et demande validation explicite avant Étape 3.
+
+### Anti-patterns du cadrage
+
+- ✗ Relancer parce que "plus de contexte serait mieux" (Phase 1).
+- ✗ Relancer avec une liste de questions (Phase 1).
+- ✗ Exposer la grille d'écoute à l'utilisateur (Phase 1).
+- ✗ Demander budget, délais, planning (Phase 1, hors scope ferme).
+- ✗ Demander un KPI, des personas, des user stories (Phase 1).
+- ✗ Demander la stack technique en Phase 1 (réservé à Phase 3).
+- ✗ Transformer l'acquittement (Phase 2) en liste à puces structurée.
+- ✗ Sauter Phase 2 et passer directement aux choix techniques.
+- ✗ Récapituler les choix techniques (Phase 4) avant que tous soient reçus.
 
 ## Étape 3 — Génération
 
