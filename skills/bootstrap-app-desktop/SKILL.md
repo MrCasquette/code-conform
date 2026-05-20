@@ -43,41 +43,51 @@ Inspecter le dossier cible :
 
 ## Étape 2 — Cadrage interactif
 
-Pose les questions une par une, attends les réponses. Capture dans `docs/conventions.md`.
+Cadrage en **phasage strict** (philosophy §8 INVARIANT) : métier → technique adaptée → récap → génération. Pas de bundle, pas de récap prématuré. Capture chaque décision dans `docs/conventions.md` au fil de l'eau.
 
-**Hard rule (philosophy §1 INVARIANT bloquant)** : toutes les questions doivent recevoir réponse avant Étape 3. **Aucun fichier ne s'écrit tant qu'une question reste ouverte**. Pas de *"je scaffold, tu me diras après"* — c'est une violation, pas une initiative.
+**Hard rule (philosophy §1 INVARIANT bloquant)** : aucune génération de fichier tant qu'une question reste ouverte. Pas de *"je scaffold, tu me diras après"* — c'est une violation, pas une initiative.
 
-**Q1 — Métier de l'app ?**
-Une phrase. Sert à orienter persistance, multi-window, plugins.
+### Phase 1 — Métier (texte libre, bloquante, ne pose aucune autre question pendant ce temps)
 
-**Q2 — Framework UI ?**
-- React 19 (default code-conform)
-- Vue 3 (sur signal)
-- Svelte 5 (sur signal)
+**Q1 — Description métier (pure)**
 
-**Q3 — Persistance locale ?**
-- Aucune (app stateless ou config en mémoire)
-- `tauri-plugin-store` (JSON, simple, < 1k lignes)
-- `tauri-plugin-sql` SQLite (relationnel, requêtes, migrations)
-- Filesystem direct (fichiers user, ex: éditeur)
+Pose **uniquement** cette question et attends la réponse. Aucun QCM technique en parallèle, aucune mention d'artefacts techniques (persistance, fenêtrage, plateformes).
 
-Si SQLite → demander : migrations gérées comment ? (sqlx-cli, migrations embarquées dans le binaire, ou script Rust ad-hoc).
+Format type :
 
-**Q4 — IPC / Commands Rust ?**
-- Aucune (app full-front, Tauri = juste packaging)
-- Commands ciblées (FS, OS, calculs lourds)
+> Décris l'app desktop en 2-4 phrases :
+> - Quel problème elle résout, pour qui ?
+> - L'utilisateur l'utilise comment, à quelle fréquence ?
+> - Manipule-t-elle des données utilisateur sensibles, des fichiers locaux, du contenu créé par l'utilisateur ?
+> - Inspirations (apps existantes qui s'en approchent) — optionnel.
+>
+> Pas besoin de parler persistance, fenêtres, plateformes — je déduirai en phase 2 et te ferai valider.
 
-Si commands → tauri-specta pour typer côté TS automatiquement, sinon écriture manuelle des types côté front (frontière Zod en sortie d'`invoke`).
+### Phase 2 — Technique adaptée (après Phase 1 close)
 
-**Q5 — Fenêtrage ?**
-- Mono-window (default)
-- Multi-window (signal : tray, popup OS, settings séparées)
-- Tray-only (background)
+Annonce d'abord ton inférence depuis le métier, puis pose en QCM (`AskUserQuestion`) les choix non inférables.
 
-**Q6 — Distribution ?**
-- Plateformes cibles (macOS / Windows / Linux — préciser combien).
-- Updater auto (`tauri-plugin-updater`) on/off.
-- Signature (code signing) — différé si non-critique au bootstrap.
+Format type :
+
+> Vu ce que tu décris, j'infère :
+> - Persistance probable : <ex: SQLite si relations, store JSON si config simple, FS si éditeur de fichiers>
+> - Fenêtrage probable : <mono-window dans 90% des cas>
+> - IPC probable : <commands ciblées si besoins natifs, sinon aucune>
+> - Plateformes probables : <macOS+Linux si solo, +Windows si distribution large>
+>
+> Confirme ou ajuste avant que je pose les choix techniques restants.
+
+**Q-techniques modèles** (à adapter au métier) :
+
+- **Framework UI** : React 19 (default code-conform) / Vue 3 / Svelte 5.
+- **Persistance locale** : Aucune / `tauri-plugin-store` (JSON) / `tauri-plugin-sql` SQLite / Filesystem direct. Si SQLite : stratégie migrations (sqlx-cli / embedded / script Rust).
+- **IPC / Commands Rust** : Aucune / Commands ciblées. Si commands : tauri-specta (codegen) ou Zod en sortie d'`invoke` (frontière philosophy §5).
+- **Fenêtrage** : Mono-window (default) / Multi-window (sur signal : tray, settings) / Tray-only.
+- **Distribution** : Plateformes cibles + updater on/off + code signing (différable).
+
+### Phase 3 — Récap puis validation
+
+**Pas de récap tant que Phase 2 incomplète.** Quand tout est répondu, présente la synthèse et demande validation explicite avant Étape 3.
 
 ## Étape 3 — Génération
 

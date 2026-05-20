@@ -151,10 +151,33 @@ uninstall_skills() {
   done
 }
 
+prune_orphan_skills() {
+  # Skills présents dans SKILLS_DST avec notre sentinelle mais absents du repo source.
+  [[ -d "$SKILLS_DST" ]] || return
+  local found=0
+  local source_names
+  source_names=$(find "$SKILLS_SRC" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
+  for installed in "$SKILLS_DST"/*/; do
+    [[ -d "$installed" ]] || continue
+    local name
+    name="$(basename "${installed%/}")"
+    # Si présent dans le repo source, on l'a déjà traité.
+    if echo "$source_names" | grep -qx "$name"; then continue; fi
+    # Sinon, vérifier sentinelle pour confirmer qu'on l'a posé.
+    if [[ -f "$installed$SENTINEL" ]]; then
+      rm -rf "${installed%/}"
+      echo "→  pruned orphan $installed (présent dans home, absent du repo source — supprimé via sentinelle)"
+      found=1
+    fi
+  done
+  [[ $found -eq 1 ]] && echo ""
+}
+
 case "$mode" in
   copy)
     install_docs_copy
     install_skills copy
+    prune_orphan_skills
     echo ""
     echo "✓ code-conform installé (copie, résilient)."
     echo "  Update : ./install.sh (re-lance, écrase nos copies via sentinelle)."
@@ -163,6 +186,7 @@ case "$mode" in
   link)
     install_docs_link
     install_skills link
+    prune_orphan_skills
     echo ""
     echo "✓ code-conform installé (symlinks, mode dev)."
     echo "  Édits dans $REPO_ROOT effectifs dès la prochaine session Claude Code."

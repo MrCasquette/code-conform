@@ -221,10 +221,27 @@ Ces deux modes correspondent aux skills de cadrage (`bootstrap-*`, `audit-*`). L
 
 - Demander pour la forme. Si tu peux inférer raisonnablement, infère et annonce ton inférence ("je pars du principe que X — corrige si non").
 - Poser un interrogatoire de 15 questions. Pose les 3-5 qui débloquent vraiment la décision en cours.
-- Proposer des choix techniques pré-mâchés sans avoir clarifié le métier. L'ordre est : métier d'abord, technique ensuite.
+- Proposer des choix techniques pré-mâchés sans avoir clarifié le métier. L'ordre est : métier d'abord, technique ensuite (cf. *Phasage* ci-dessous).
 - **Procéder malgré une question non-répondue.** Si tu as posé une question structurante (métier, périmètre, choix non inférable) et qu'elle n'a pas reçu de réponse, tu **ne génères pas** — pas de scaffold, pas de correction, pas de fichier écrit. Annoncer *"je commence, tu me diras après"* viole l'INVARIANT §1. La bonne réaction : ré-énoncer la question, signaler qu'elle bloque, attendre. Si l'utilisateur veut "passer", c'est un signal — pas un go silencieux.
+- **Bundler métier et technique dans une même salve de questions.** Mélanger une question métier (texte libre) avec des QCM techniques en parallèle dilue l'attention de l'utilisateur, la question métier est noyée, l'utilisateur répond aux QCM (visibles/cliquables) et la question texte libre passe à la trappe. C'est une faute de phasage — cf. *Phasage* ci-dessous.
+- **Récap prématuré.** Annoncer une synthèse des choix avant que **toutes** les questions structurantes aient reçu réponse donne l'illusion d'avancement. Pas de récap tant qu'une question reste ouverte.
+- **Polluer une question métier avec des artefacts techniques.** Demander *"décris ton métier ET combien de pages ET combien de formulaires"* n'est pas une question métier — c'est une demande d'inventaire technique déguisée. Le métier décrit l'activité, la cible, l'intention ; les artefacts techniques (pages, formulaires, persistance, stack) en **découlent par inférence** et se valident en phase technique.
 
-**Forme** : pose tes questions groupées et hiérarchisées (la plus bloquante d'abord), avec ton hypothèse par défaut quand tu en as une. L'utilisateur peut alors valider en bloc plutôt que de répondre à chacune séparément.
+**Phasage — INVARIANT bloquant** :
+
+Le LLM a un biais structurel : *tracer tout schuss* pour livrer vite. Cela produit des questions bundlées, des récaps prématurés, des scaffolds anticipés. Le phasage explicite ci-dessous est la **contre-mesure** qui impose un rythme step-by-step.
+
+1. **Phase 1 — Métier (texte libre, bloquante).** Pose **une seule** question ouverte sur l'activité, la cible, l'intention. Pas de QCM technique en parallèle. Attends la réponse complète. La question doit être **pure métier** : aucun artefact technique mentionné (pas de "combien de pages", "quels formulaires", "quelle stack"). Le métier décrit *quoi* et *pourquoi*, jamais *comment*.
+
+2. **Phase 2 — Technique adaptée (après réponse Phase 1).** Construis les questions techniques en **t'appuyant sur le métier reçu**. Les options proposées peuvent varier selon le contexte métier (un site éditorial multi-auteur n'oriente pas vers les mêmes choix qu'une présentation de freelance). Annonce d'abord ton **inférence depuis le métier** ("vu ce que tu décris, je vois X pages probables, Y formulaires probables, stack Z adaptée — confirme ou ajuste"), puis pose les choix techniques restants qui ne peuvent être inférés. Utilise un QCM groupé (ex: `AskUserQuestion` côté Claude Code) pour les choix structurés, pas de la prose libre.
+
+3. **Phase 3 — Récap puis validation.** Récap uniquement quand **toutes** les réponses sont reçues. Présente la liste exhaustive des décisions. Demande validation explicite avant Étape de génération.
+
+4. **Phase 4 — Génération.** Seulement après validation explicite de la Phase 3.
+
+**Anti-pattern à reconnaître** : si tu te surprends à formuler *"je récapitule"* alors qu'une question est encore ouverte, ou à présenter un QCM technique en même temps qu'une question métier libre, **stop** — tu enfreins le phasage.
+
+**Adaptation dynamique** : les questions techniques de Phase 2 ne sont **pas figées d'avance**. Elles sont **construites** au moment où tu les poses, informées par le métier. Un skill peut lister des Q-modèles, mais les options proposées et leur pertinence dépendent du contexte métier capté. Une option non pertinente au métier ne doit pas être proposée comme choix — c'est du bruit.
 
 ---
 

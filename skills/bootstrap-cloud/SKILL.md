@@ -38,13 +38,42 @@ Trois principes :
 
 ## Étape 2 — Cadrage interactif
 
-Pose les questions séquentiellement. Capture chaque décision dans `docs/conventions.md` au fil de l'eau.
+Cadrage en **phasage strict** (philosophy §8 INVARIANT) : métier → technique adaptée → récap → génération. Pas de bundle, pas de récap prématuré. Particulièrement critique ici où une question non répondue compromet la cohérence système. Capture chaque décision dans `docs/conventions.md` au fil de l'eau.
 
-**Hard rule (philosophy §1 INVARIANT bloquant)** : toutes les questions doivent recevoir réponse avant Étape 3. **Aucun fichier ne s'écrit tant qu'une question reste ouverte** — particulièrement critique ici, où des questions non répondues (couches actives, stack par couche, contrats) compromettent toute la cohérence système. Pas de *"je commence le squelette, tu me diras après"*.
+**Hard rule (philosophy §1 INVARIANT bloquant)** : aucune génération de fichier tant qu'une question reste ouverte. Pas de *"je commence le squelette, tu me diras après"*.
 
-### Q1 — Métier de l'app ?
+### Phase 1 — Métier (texte libre, bloquante, ne pose aucune autre question pendant ce temps)
 
-Une phrase. Sert à orienter tout le reste (média = stockage objet ; gestion = relationnel ; collab temps réel = WebSocket/SSE ; data-heavy = ETL/worker).
+**Q1 — Description métier (pure)**
+
+Pose **uniquement** cette question et attends la réponse. Aucun QCM technique en parallèle, aucune mention d'artefacts techniques (couches, stack, contrats, déploiement).
+
+Format type :
+
+> Décris l'app cloud en 3-5 phrases :
+> - Quel problème elle résout, pour qui ?
+> - Comment les utilisateurs interagissent (web seulement ? + mobile ? + desktop ? + API publique ?) — *côté usage, pas côté technique*.
+> - Quel type de données manipule-t-elle (média lourd, contenu textuel, données relationnelles, événements temps réel) ?
+> - Volume attendu (utilisateurs concurrents, taille DB) si tu as une idée.
+> - Inspirations (apps existantes type Navidrome, Mealie, etc.) — optionnel.
+>
+> Pas besoin de parler stack, framework, monorepo — je déduirai en phase 2 et te ferai valider.
+
+### Phase 2 — Technique adaptée (après Phase 1 close)
+
+Annonce d'abord ton inférence depuis le métier, puis pose les questions en QCM (`AskUserQuestion`) groupé par batch cohérent (couches, stack, contrats, déploiement).
+
+Format type :
+
+> Vu ce que tu décris, j'infère :
+> - Couches probables : <ex: serveur HTTP + web + DB ; ajout worker si data-heavy ; ajout client desktop si signal>
+> - Stack serveur probable : <ex: Node si CRUD productif ; Go/Rust si perf critique ; PHP si écosystème équipe>
+> - DB probable : <ex: PostgreSQL si relations ; SQLite si selfhost mono-process ; pgvector si IA>
+> - Contrat inter-couches : <inféré depuis combinaison stack>
+>
+> Confirme ou ajuste avant que je pose les choix non inférables.
+
+**Q-techniques modèles** (à adapter au métier, ne propose pas tout systématiquement) :
 
 ### Q2 — Couches actives ?
 
@@ -124,6 +153,10 @@ INVARIANT : **pas de DTO copié-collé entre couches**. Si l'utilisateur résist
 - **Prod** : single-host Docker Compose (selfhost typique) ou multi-host (signal).
 - Pas de Kubernetes par défaut (overhead injustifié pour selfhost).
 - Secrets : `.env` versionné en `.env.example` uniquement, `.env` réel `.gitignore`.
+
+### Phase 3 — Récap puis validation
+
+**Pas de récap tant que les Q couches/stack/contrats/déploiement ne sont pas toutes répondues.** Présente la synthèse exhaustive (couches actives + stack par couche + contrat inter-couches + monorepo tooling + auth + déploiement) et demande validation explicite avant Étape 3.
 
 ## Étape 3 — Génération
 

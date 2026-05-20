@@ -44,35 +44,72 @@ Annoncer une phrase de cadrage : *"Je vais créer un site vitrine Astro 5 + Reac
 
 ## Étape 2 — Questions de cadrage
 
-Posture interactive (philosophy §1 et §8 INVARIANT). Pose les questions groupées avec hypothèse par défaut.
+Posture interactive (philosophy §1 et §8 INVARIANT). Le cadrage suit un **phasage strict** : métier → technique adaptée → récap → génération. Pas de bundle, pas de récap prématuré.
 
-**Hard rule (philosophy §1 INVARIANT bloquant)** : toutes les questions ci-dessous doivent recevoir réponse avant Étape 3. **Aucun fichier ne s'écrit tant qu'une question reste ouverte**. Si l'utilisateur veut "passer" une question, ré-énonce-la et signale qu'elle bloque — ne procède pas en silence avec un default ad-hoc, et ne dis pas *"je scaffold, tu me diras après"*.
+**Hard rule (philosophy §1 INVARIANT bloquant)** : aucune génération de fichier tant qu'une question reste ouverte. Si l'utilisateur veut "passer", ré-énonce et signale que ça bloque.
 
-**Q1 — Métier du site** (philosophy §2)
-- En 2 lignes max : qui est l'utilisateur final, que vient-il faire, sur combien de pages clés ?
-- Demander aussi : présence d'un formulaire (contact, réservation, devis) ? Combien ?
+### Phase 1 — Métier (texte libre, bloquante, ne pose aucune autre question pendant ce temps)
 
-**Q2 — Framework pour les islands interactives**
-- React 19 (default code-conform — `ref` standard prop, écosystème mature).
-- Vue 3 (sur signal — équipe Vue, écosystème Nuxt en parallèle, composables familiers).
-- Svelte 5 (sur signal — petite empreinte, runes, animations natives).
-- Aucun (Astro pur) — uniquement si toutes les interactivités sont triviales et tiennent en `<script>` inline.
+**Q1 — Description métier (pure)**
 
-**Q3 — i18n**
-- Multilingue ? Si oui : langues + langue par défaut. Default proposé : `fr` seul, ou `fr + en` si signal international.
+Pose **uniquement** cette question et attends la réponse. Aucun QCM technique en parallèle, aucune mention d'artefacts techniques (pages, formulaires, stack).
 
-**Q4 — Contenu : statique ou CMS**
-- (A) **Statique** — contenu en Markdown/MDX dans `src/content/`. Default pour ≤ 10 pages quasi-immuables.
-- (B) **CMS headless** — contenu géré dans Directus (ou autre). Recommandé si le client/utilisateur final édite. Sinon écarté (philosophy §4 — pas d'abstraction "au cas où").
+Format type :
 
-**Q5 — Adapter de rendu**
-- (A) **Static** (`@astrojs/static` — default Astro) si contenu = statique pur, pas de soumission de formulaire serveur.
-- (B) **Node SSR** (`@astrojs/node` mode standalone) si formulaires côté serveur, i18n avec négociation Accept-Language, CMS rendu à la requête, ou Docker.
-- (C) Adapter hébergeur (Vercel, Netlify, Cloudflare) uniquement si plateforme connue. Sinon Node SSR portable.
+> Décris l'activité du projet (la tienne ou celle de ton client) en 2-4 phrases :
+> - Qui es-tu / qui est le client ? Quelle activité ?
+> - Qui visite le site (visiteur cible) ?
+> - Qu'est-ce que tu veux qu'il retienne ou qu'il fasse en repartant ?
+> - Inspirations visuelles ou de structure si tu en as (liens, références) — optionnel.
+>
+> Pas besoin de parler pages, formulaires, technologies — je déduirai en phase 2 et te ferai valider.
 
-**Q6 — Posture tokens** (cf. `atomic-design.md` §4) : A (noms-marque) ou B (sémantique). Brand fort attendu sur un site vitrine ; default A si charte couleur connue, sinon B générique.
+Pose des sous-questions métier supplémentaires uniquement si la réponse laisse des zones floues critiques (granularité du domaine, acteurs avec rôles différenciés, invariants métier explicites). Cf. philosophy §8 "Toujours demander, sur le métier".
 
-**Q7 — Linter/formatter** — Biome par défaut, ESLint+Prettier si signal contraire (lib custom, équipe imposée).
+### Phase 2 — Technique adaptée (après Phase 1 close)
+
+À partir du métier reçu, **annonce d'abord ton inférence**, puis pose en QCM (via `AskUserQuestion` côté Claude Code) les choix qui ne peuvent être inférés.
+
+Format type :
+
+> Vu ce que tu décris, j'infère :
+> - Pages probables : <liste émergente, ex: accueil, présentation, formules, contact>
+> - Formulaires probables : <inférés du contexte, ex: contact ou réservation>
+> - Adapter probable : <Static si contenu pur, Node SSR si formulaires serveur>
+>
+> Confirme ou ajuste cette base avant que je pose les choix techniques restants.
+
+Puis QCM groupé sur les choix structurés. Les options peuvent **varier selon le métier** (ex: ne pas proposer "Static" comme option si le métier implique manifestement un formulaire serveur — propose Node SSR directement avec justification).
+
+**Q-techniques modèles** (à adapter au métier) :
+
+- **Framework des islands interactives** : React 19 (default code-conform) / Vue 3 / Svelte 5 / Aucun (Astro pur).
+- **i18n** : Multilingue ? Langues + default. Default proposé : `fr` seul, sinon selon métier.
+- **Contenu** : Statique MDX (default ≤ 10 pages immuables) / CMS headless (si client édite — Directus suggestion, ouvrir au choix si signal). Pour le choix CMS, cf. BACKLOG (discussion ouverte sur le caractère arbitraire de Directus default).
+- **Adapter de rendu** : Static / Node SSR / Adapter hébergeur. Inféré depuis présence formulaires + besoin Docker.
+- **Posture tokens** : A (noms-marque, si charte couleur donnée) / B (sémantique, default sinon). Cf. `atomic-design.md` §4.
+- **Linter** : Biome (default) / ESLint+Prettier (sur signal).
+
+### Phase 3 — Récap puis validation
+
+**Pas de récap tant que Phase 2 incomplète.** Quand toutes les réponses sont reçues, présente la synthèse exhaustive et **demande validation explicite** avant Étape 3.
+
+Format type :
+
+> Récap des décisions :
+> - Métier : <résumé en 1-2 lignes>
+> - Pages : <liste>
+> - Formulaires : <liste>
+> - Framework islands : <choix>
+> - i18n : <choix>
+> - Contenu : <choix>
+> - Adapter : <choix>
+> - Tokens : <choix>
+> - Linter : <choix>
+>
+> Je procède au scaffold sur cette base ?
+
+Attends "oui / valide / go" explicite. Pas de procédure tacite.
 
 ## Étape 3 — Génération de la structure
 
