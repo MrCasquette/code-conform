@@ -60,9 +60,9 @@ Méthode d'observation : noter au fil des sessions les **frictions concrètes** 
 
 Skills cibles initiaux :
 
-- [x] `/bootstrap-site-vitrine` / `/audit-site-vitrine` — créés v0.1 (2026-05-16). Adossés au projet agay (Astro 5 + React 19 islands + Tailwind v4 + i18n natif + Directus + Biome). Bootstrap 254 lignes, audit 176 lignes. Default Astro, override Next sur signal réel (SSR partout, Server Components) — bascule vers `/bootstrap-saas` dans ce cas. Cadrage interactif (métier, i18n, CMS vs statique, adapter). Non testé en usage réel.
-- [x] `/bootstrap-app-desktop` / `/audit-app-desktop` — créés v0.1 (2026-05-20). Tauri 2 default (Vite + React 19 + Tailwind v4 + Biome). Adossés à Plume. Bootstrap couvre Q1-Q6 (métier, framework UI, persistance store/SQLite/FS, IPC + tauri-specta, fenêtrage, distribution). Audit met sécurité (allowlist, CSP) en lot prioritaire. Non testé en usage réel.
-- [x] `/bootstrap-cloud` / `/audit-cloud` — **ébauche v0.1** (2026-05-20). Pensé comme système monorepo (pas somme de skills). Cadrage Q1-Q7 (métier, couches actives, stack par couche avec contraintes croisées, contrats, tooling monorepo, auth, déploiement). Audit met l'accent sur incohérences **inter-couches** (contrat dupliqué, auth divergente, types non synchronisés). Refs : macrodio (Rust+Go+web+Docker), mininook (client Tauri d'un serveur compagnon), pharmacotta (en dev). Skills nominalement utilisables mais **bloqués sur SSOT manquantes** (voir Roadmap ci-dessous) — l'audit reste partiel pour PHP/Go/Python tant que les `<langage>.md` ne sont pas posées.
+- [x] `/bootstrap-site-vitrine` / `/audit-site-vitrine` — créés v0.1 (2026-05-16). Adossés à un projet de référence site vitrine (Astro 5 + React 19 islands + Tailwind v4 + i18n natif + Directus + Biome). Bootstrap 254 lignes, audit 176 lignes. Default Astro, override Next sur signal réel (SSR partout, Server Components) — bascule vers `/bootstrap-saas` dans ce cas. Cadrage interactif (métier, i18n, CMS vs statique, adapter). Non testé en usage réel.
+- [x] `/bootstrap-app-desktop` / `/audit-app-desktop` — créés v0.1 (2026-05-20). Tauri 2 default (Vite + React 19 + Tailwind v4 + Biome). Adossés à un projet de référence UI tool Tauri React. Bootstrap couvre Q1-Q6 (métier, framework UI, persistance store/SQLite/FS, IPC + tauri-specta, fenêtrage, distribution). Audit met sécurité (allowlist, CSP) en lot prioritaire. Non testé en usage réel.
+- [x] `/bootstrap-cloud` / `/audit-cloud` — **ébauche v0.1** (2026-05-20). Pensé comme système monorepo (pas somme de skills). Cadrage Q1-Q7 (métier, couches actives, stack par couche avec contraintes croisées, contrats, tooling monorepo, auth, déploiement). Audit met l'accent sur incohérences **inter-couches** (contrat dupliqué, auth divergente, types non synchronisés). Refs : projet cloud multi-tech (Rust+Go+web+Docker), projet client Tauri d'un serveur compagnon, projet SPA Vite (en dev). Skills nominalement utilisables mais **bloqués sur SSOT manquantes** (voir Roadmap ci-dessous) — l'audit reste partiel pour PHP/Go/Python tant que les `<langage>.md` ne sont pas posées.
 - [ ] `/bootstrap-saas` / `/audit-saas` — Next App Router ou Nuxt selon stack JS/Vue préférée, à demander à l'utilisateur.
 - [ ] `/bootstrap-cli` / `/audit-cli` — langage selon (TS, Rust, Go), pas de framework lourd.
 - [x] `/init-design-system` — créé v0.1 (2026-05-16). `skills/init-design-system/SKILL.md`, 256 lignes. Bootstrap uniquement. Cadre interactif sur posture tokens A/B, framework détecté, niveaux atomic optionnels. Génère structure minimale (atoms/molecules/organisms vides + `Button` de référence en `Record<Variant>`), `@theme` Tailwind v4, helper `cn`, capture décisions dans `docs/conventions.md` du projet. Non testé en usage réel — itérer à la première session.
@@ -90,8 +90,8 @@ Skills cibles initiaux :
 **Pré-requis** : SSOT consolidée sur tous les langages/contextes ciblés (cf. roadmap ci-dessous) avant de créer les skills, sinon ils consomment du vide.
 
 **Cas en backlog** (à explorer plus tard, hors V1 skills) :
-- [ ] `/bootstrap-shared-design-system` — design system partagé entre projets (cas Axiome) : repo référence Histoire/Storybook + injection dans projets consommateurs.
-- [ ] `/audit-self-hosted` (envisageable) — projet multi-tech client/serveur (Go + Rust + web + Docker + DB type macrodio). Trop hétérogène pour bootstrap, mais auditable contre les conventions par sous-section.
+- [ ] `/bootstrap-shared-design-system` — design system partagé entre projets (cas typique : lib DS interne consommée par plusieurs apps) : repo référence Histoire/Storybook + injection dans projets consommateurs.
+- [ ] `/audit-self-hosted` (envisageable) — projet multi-tech client/serveur (Go + Rust + web + Docker + DB). Trop hétérogène pour bootstrap, mais auditable contre les conventions par sous-section.
 - [ ] `/bootstrap-ecommerce` — selon besoin (Next + Stripe, custom, etc.). Pas prioritaire en V1.
 
 ---
@@ -99,10 +99,10 @@ Skills cibles initiaux :
 ## Roadmap SSOT — extensions à venir
 
 - [x] `docs/architecture/rust.md` — créé et calibré v1.0 (2026-05-16)
-- [x] `docs/architecture/ui.md` — créé v1.0 (2026-05-16). Doc unique : Atomic Design + conventions composants + tokens + design system. Cross-framework (React/Vue/Svelte). Conventions ancrées sur projets Louis (brand fort, Next) et Plume (UI tool, Tauri/Vite). Postures tokens A/B explicites, `Record<Variant>` par défaut.
+- [x] `docs/architecture/ui.md` — créé v1.0 (2026-05-16). Doc unique : Atomic Design + conventions composants + tokens + design system. Cross-framework (React/Vue/Svelte). Conventions ancrées sur deux projets de référence (un projet Next brand fort monothème, un projet UI tool Tauri/Vite avec tokens sémantiques). Postures tokens A/B explicites, `Record<Variant>` par défaut.
 - [x] `docs/meta/ui.md` — **abandonné** (2026-05-16). Pas de méta dédié : `docs/meta/language.md` a joué ce rôle pour la production de `ui.md` (dérivée fonctionnelle du squelette langage avec adaptations documentées dans le préambule du doc).
 - [ ] `docs/architecture/monorepo.md` — si besoin réel émerge (workspaces pnpm/Bun, partage de packages domain)
-- [ ] **`docs/architecture/go.md`** — débloquerait `/audit-cloud` sur couche serveur Go (macrodio). Priorité haute.
+- [ ] **`docs/architecture/go.md`** — débloquerait `/audit-cloud` sur couche serveur Go. Priorité haute.
 - [ ] **`docs/architecture/contracts.md`** (méta) — OpenAPI vs proto vs package TS partagé, conventions codegen. Débloquerait l'axe F de `/audit-cloud` qui est le plus critique (INVARIANT philosophy §5).
 - [ ] `docs/architecture/php.md` — si projet PHP cible dans la roadmap selfhost.
 - [ ] `docs/architecture/python.md` — si projet Python cible.

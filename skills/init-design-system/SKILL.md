@@ -252,5 +252,5 @@ Une fois la structure générée :
 ## Out of scope (renvoi)
 
 - **DS existant à auditer** → `/audit-design-system` (à venir, BACKLOG).
-- **DS partagé multi-projets** (cas Axiome) → `/bootstrap-shared-design-system` (BACKLOG, ligne 70).
+- **DS partagé multi-projets** (lib DS interne consommée par plusieurs apps) → `/bootstrap-shared-design-system` (BACKLOG).
 - **Bootstrap projet complet** (routing, layouts, première page) → skills `/bootstrap-{site-vitrine,app-desktop,saas,cli}` (BACKLOG). `/init-design-system` est transverse, à composer avec eux.

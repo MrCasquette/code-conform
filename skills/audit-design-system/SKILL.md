@@ -168,5 +168,5 @@ Pour chaque lot :
 
 - **Projet sans DS** → `/init-design-system`.
 - **Audit projet entier** (routing, archi back, build) → skills `/audit-{site-vitrine,app-desktop,saas,cli}` (BACKLOG).
-- **DS partagé multi-projets** (Axiome) → `/audit-shared-design-system` (BACKLOG ligne 70).
+- **DS partagé multi-projets** (lib DS interne consommée par plusieurs apps) → `/audit-shared-design-system` (BACKLOG).
 - **Performance UI / bundle size** → hors scope DS conventions. Sujet propre, à traiter sur signal utilisateur.

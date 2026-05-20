@@ -172,7 +172,7 @@ Reconnaissance honnête des angles qui ne sont **pas** couverts par le système 
 - **Performance / observabilité** : pas de doc. La posture solo craft dit "basiques toujours, avancé sur signal" — applicable mais peu cadré.
 - **Sécurité applicative** : idem.
 - **Monorepo** : pas de doc. Si un projet le justifie un jour.
-- **Self-hosted multi-tech** (cas type macrodio : Go + Rust + web + Docker + DB) : trop hétérogène pour un bootstrap unique. Audit possible par sous-section.
+- **Self-hosted multi-tech** (cas type : Go + Rust + web + Docker + DB en monorepo) : trop hétérogène pour un bootstrap unique. Audit possible par sous-section.
 
 Ces zones sont actées dans `BACKLOG.md` comme à explorer si le besoin se présente. Pas de création préventive (cohérent avec le filtre fondamental philosophy §4).
 

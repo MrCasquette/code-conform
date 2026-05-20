@@ -108,7 +108,7 @@ INVARIANT : **pas de DTO copié-collé entre couches**. Si l'utilisateur résist
 | Tout JS/TS | `pnpm workspaces` (ou `bun workspaces`). Turbo optionnel si plusieurs apps à builder en parallèle. |
 | Tout Rust | Cargo workspace |
 | Tout Go | go.work (Go workspaces) |
-| Hétérogène (Rust + Go + JS, ex: macrodio) | Pas de monorepo tool global. Dossiers `server/`, `web/`, `worker/` + `Makefile` racine pour orchestrer (`make dev`, `make build`). |
+| Hétérogène (ex: Rust + Go + JS web) | Pas de monorepo tool global. Dossiers `server/`, `web/`, `worker/` + `Makefile` racine pour orchestrer (`make dev`, `make build`). |
 
 ### Q6 — Auth transverse
 

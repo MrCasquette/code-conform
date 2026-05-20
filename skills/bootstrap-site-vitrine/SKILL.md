@@ -65,7 +65,7 @@ Posture interactive (philosophy §8 INVARIANT). Pose les questions groupées ave
 
 **Q5 — Posture tokens** (cf. `ui.md` §4) : A (noms-marque) ou B (sémantique). Brand fort attendu sur un site vitrine ; default A si charte couleur connue, sinon B générique.
 
-**Q6 — Linter/formatter** — Biome par défaut (cf. agay), ESLint+Prettier si signal contraire (lib custom, équipe imposée).
+**Q6 — Linter/formatter** — Biome par défaut, ESLint+Prettier si signal contraire (lib custom, équipe imposée).
 
 ## Étape 3 — Génération de la structure
 

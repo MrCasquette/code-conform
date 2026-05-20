@@ -23,7 +23,7 @@ Si l'app a un serveur distant compagnon → c'est un projet **cloud** (`/bootstr
 | Couche | Default | Raison |
 |---|---|---|
 | Runtime | Tauri 2.x | Binaire natif léger, sécurité par défaut (allowlist), updater intégré |
-| Frontend | React 19 + Vite | Cohérent avec Plume (ref), `ref` standard prop, écosystème mature |
+| Frontend | React 19 + Vite | `ref` standard prop, écosystème mature, cohérent avec ref UI tool Tauri |
 | Styling | Tailwind v4 via `@tailwindcss/vite` | SSOT `ui.md` |
 | State | Zustand | Suffit en mono-window, pas de routing global |
 | Persistance locale | `tauri-plugin-store` (JSON) ou `tauri-plugin-sql` (SQLite) | Selon besoin Q3 |
