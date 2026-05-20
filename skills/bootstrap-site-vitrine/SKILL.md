@@ -51,21 +51,27 @@ Posture interactive (philosophy §8 INVARIANT). Pose les questions groupées ave
 - En 2 lignes max : qui est l'utilisateur final, que vient-il faire, sur combien de pages clés ?
 - Demander aussi : présence d'un formulaire (contact, réservation, devis) ? Combien ?
 
-**Q2 — i18n**
+**Q2 — Framework pour les islands interactives**
+- React 19 (default code-conform — `ref` standard prop, écosystème mature).
+- Vue 3 (sur signal — équipe Vue, écosystème Nuxt en parallèle, composables familiers).
+- Svelte 5 (sur signal — petite empreinte, runes, animations natives).
+- Aucun (Astro pur) — uniquement si toutes les interactivités sont triviales et tiennent en `<script>` inline.
+
+**Q3 — i18n**
 - Multilingue ? Si oui : langues + langue par défaut. Default proposé : `fr` seul, ou `fr + en` si signal international.
 
-**Q3 — Contenu : statique ou CMS**
+**Q4 — Contenu : statique ou CMS**
 - (A) **Statique** — contenu en Markdown/MDX dans `src/content/`. Default pour ≤ 10 pages quasi-immuables.
 - (B) **CMS headless** — contenu géré dans Directus (ou autre). Recommandé si le client/utilisateur final édite. Sinon écarté (philosophy §4 — pas d'abstraction "au cas où").
 
-**Q4 — Adapter de rendu**
+**Q5 — Adapter de rendu**
 - (A) **Static** (`@astrojs/static` — default Astro) si contenu = statique pur, pas de soumission de formulaire serveur.
 - (B) **Node SSR** (`@astrojs/node` mode standalone) si formulaires côté serveur, i18n avec négociation Accept-Language, CMS rendu à la requête, ou Docker.
 - (C) Adapter hébergeur (Vercel, Netlify, Cloudflare) uniquement si plateforme connue. Sinon Node SSR portable.
 
-**Q5 — Posture tokens** (cf. `ui.md` §4) : A (noms-marque) ou B (sémantique). Brand fort attendu sur un site vitrine ; default A si charte couleur connue, sinon B générique.
+**Q6 — Posture tokens** (cf. `ui.md` §4) : A (noms-marque) ou B (sémantique). Brand fort attendu sur un site vitrine ; default A si charte couleur connue, sinon B générique.
 
-**Q6 — Linter/formatter** — Biome par défaut, ESLint+Prettier si signal contraire (lib custom, équipe imposée).
+**Q7 — Linter/formatter** — Biome par défaut, ESLint+Prettier si signal contraire (lib custom, équipe imposée).
 
 ## Étape 3 — Génération de la structure
 
@@ -75,31 +81,32 @@ Annonce l'arbo avant exécution. Applique après accord.
 
 ```bash
 pnpm create astro@latest . --template minimal --typescript strict --no-git
-pnpm astro add react
+# selon Q2 :
+pnpm astro add react   # ou vue, ou svelte, ou rien (Astro pur)
 pnpm astro add tailwind   # ou installation manuelle Tailwind v4 si l'add fait v3
 pnpm add -D @biomejs/biome
 pnpm add -D @astrojs/sitemap
 ```
 
-Si CMS Directus retenu : `pnpm add @directus/sdk`.
-Si Node SSR retenu : `pnpm astro add node`.
-Si formulaires : `pnpm add zod react-hook-form sonner`.
+Si CMS Directus retenu (Q4=B) : `pnpm add @directus/sdk`.
+Si Node SSR retenu (Q5=B) : `pnpm astro add node`.
+Si formulaires : `pnpm add zod` + (selon Q2) `react-hook-form` ou `vee-validate` ou équivalent, + `sonner` ou équivalent toaster.
 Helper UI : `pnpm add clsx tailwind-merge`.
 
 ### 3.2 Configuration Astro (`astro.config.mjs`)
 
 ```js
 import { defineConfig } from 'astro/config'
-import react from '@astrojs/react'
+import react from '@astrojs/react'      // ou vue / svelte selon Q2
 import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
-// + node adapter si SSR
+// + node adapter si SSR (Q5=B)
 
 export default defineConfig({
   site: 'https://example.com', // à remplacer
-  integrations: [react(), sitemap()],
+  integrations: [react(), sitemap()],    // adapter integration selon Q2
   vite: { plugins: [tailwindcss()] },
-  // + i18n si Q2 = oui :
+  // + i18n si Q3 = oui :
   i18n: {
     defaultLocale: 'fr',
     locales: ['fr', 'en'],
@@ -123,9 +130,9 @@ src/
 ├── pages/
 │   ├── index.astro
 │   └── (autres pages clés selon Q1)
-├── content/                        ← si Q3=A statique : MDX
+├── content/                        ← si Q4=A statique : MDX
 │   └── config.ts                   ← schémas content collections
-├── i18n/                           ← si Q2=oui
+├── i18n/                           ← si Q3=oui
 │   ├── fr.json
 │   └── en.json
 ├── domain/                         ← si CMS / formulaires nécessitent du schéma
@@ -139,7 +146,7 @@ src/
 
 ### 3.4 Helper `cn` + `@theme`
 
-Reprendre les recettes de `init-design-system` (§3.3 et §3.5) selon posture Q5.
+Reprendre les recettes de `init-design-system` (§3.3 et §3.5) selon posture Q6.
 
 ### 3.5 Button de référence — `Button.astro`
 
@@ -202,7 +209,7 @@ import ContactForm from '@/components/molecules/ContactForm'
 
 **Règle dure** : hydratation parcimonieuse. Tout en `client:load` = perd l'avantage Astro. Audit ensuite avec `/audit-site-vitrine`.
 
-### 3.8 CMS Directus (si Q3=B)
+### 3.8 CMS Directus (si Q4=B)
 
 `src/infrastructure/directus.ts` minimal :
 
@@ -215,7 +222,7 @@ export const directus = createDirectus(import.meta.env.DIRECTUS_URL)
 
 Types via `src/domain/<concept>/<Concept>.schema.ts` (Zod SSOT, cf. `typescript.md` §2). Pas de wrapper Repository — `directus.request(readItems(...))` direct dans la page, parse Zod en sortie.
 
-### 3.9 i18n (si Q2=oui)
+### 3.9 i18n (si Q3=oui)
 
 - `src/pages/[lang]/...` ou structure par locale selon préférence Astro 5.
 - `src/i18n/{fr,en}.json` pour traductions inline.
