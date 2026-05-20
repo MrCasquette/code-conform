@@ -22,6 +22,8 @@ Bloc à traiter après usage réel des skills `/bootstrap-site-vitrine`, `/boots
 
 - [ ] **Comportement bundle vs séparé** — la question install-time bundling (cf. `RATIONALE.md §11`) sera à reconsidérer si la sélectivité ne se vérifie pas en pratique. Le 2-dir model est gardé par défaut, à ré-arbitrer après tests.
 
+- [ ] **Choix du CMS dans `bootstrap-site-vitrine`** — Directus est actuellement imposé comme default sans le justifier ouvertement (cohérence avec `~/.claude/CLAUDE.md` global de l'auteur, mais arbitraire pour un lecteur externe). Trois options à arbitrer : (a) garder Directus default explicite avec justification, même statut que Tauri/Astro ; (b) en faire une question ouverte avec Directus suggestion ; (c) lister 2-3 CMS courants (Directus, Strapi, Sanity, Payload) avec critères de choix. Première remontée d'usage réel — 2026-05-20.
+
 Méthode d'observation : noter au fil des sessions les **frictions concrètes** (ce que le LLM a chargé vs ce dont il avait besoin, où il a dérivé en fin de session, où l'utilisateur a dû rappeler à l'ordre). Pas de mesure synthétique en avance — signaux qualitatifs d'abord.
 
 ---
