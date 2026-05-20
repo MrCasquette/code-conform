@@ -1,11 +1,11 @@
 ---
 name: bootstrap-site-vitrine
-description: Bootstrap d'un site vitrine aux conventions code-conform — Astro v5 + React 19 islands + Tailwind v4 + i18n natif + CMS optionnel (Directus). Cadrage interactif (i18n, CMS, formulaires). Cas type : site éditorial, présentation, restaurant, association.
+description: Bootstrap d'un site vitrine aux conventions code-conform — Astro (latest) + React 19 islands + Tailwind v4 + i18n natif + CMS optionnel (Directus). Cadrage interactif (i18n, CMS, formulaires). Cas type : site éditorial, présentation, restaurant, association.
 ---
 
 # /bootstrap-site-vitrine
 
-Skill **bootstrap** : crée from scratch un site vitrine aux conventions code-conform. **Astro v5 par défaut** — peu de JS shipped, multi-pages natif, islands pour l'interactif. Pour SaaS / app interactive complète, voir `/bootstrap-saas`.
+Skill **bootstrap** : crée from scratch un site vitrine aux conventions code-conform. **Astro (latest) par défaut** — peu de JS shipped, multi-pages natif, islands pour l'interactif. Pour SaaS / app interactive complète, voir `/bootstrap-saas`.
 
 Si le dossier cible n'est pas vide → **stop** et demande confirmation. Le skill suppose un répertoire vierge (ou existant à compléter sur accord explicite).
 
@@ -15,14 +15,14 @@ Si le dossier cible n'est pas vide → **stop** et demande confirmation. Le skil
 - `~/.code-conform/docs/languages/typescript.md` — Bun/pnpm, Zod, strict TS, conventions naming.
 - `~/.code-conform/docs/design/atomic-design.md` — atomic design (`src/components/`), tokens Tailwind v4, `Record<Variant>`, a11y. **Couche archi UI uniquement** — la dimension design pure (brand, palette identitaire, character typographique) est hors scope ce skill, voir `/design-system` à venir.
 
-## Pourquoi Astro v5 par défaut
+## Pourquoi Astro (latest) par défaut
 
 Choix posé et assumé (cf. RATIONALE §6 — skills opinionés). Justifications :
 
 - **Build essentiellement statique** (ou hybrid avec adapter Node), 0 JS par défaut sur les routes sans island.
 - **MDX intégré** pour contenu rédactionnel.
 - **Multi-framework** : islands React/Vue/Svelte cohabitent — adapté au profil "sustainable solo craft" qui n'impose pas une stack frontend unique.
-- **i18n natif** Astro 5 (locales, prefixDefaultLocale, getRelativeLocaleUrl).
+- **i18n natif** Astro (latest) (locales, prefixDefaultLocale, getRelativeLocaleUrl).
 - **Pages = fichiers**, routing simple, pas de framework de routing à apprendre.
 
 **Override Next.js** uniquement si signal réel :
@@ -38,9 +38,9 @@ Avant de générer :
 
 - Vérifier que le répertoire est vide (sinon stop + demander).
 - Détecter le gestionnaire préféré (pnpm défaut, Bun si l'utilisateur signale).
-- Vérifier que Node ≥ 20 est disponible (Astro 5 requirement).
+- Vérifier que Node ≥ 20 est disponible (requirement Astro courant).
 
-Annoncer une phrase de cadrage : *"Je vais créer un site vitrine Astro 5 + React 19 + Tailwind v4 dans ce répertoire. Quelques décisions à arbitrer."*
+Annoncer une phrase de cadrage : *"Je vais créer un site vitrine Astro (latest) + React 19 + Tailwind v4 dans ce répertoire. Quelques décisions à arbitrer."*
 
 ## Étape 2 — Questions de cadrage
 
@@ -285,6 +285,8 @@ Sur un site vitrine, la majorité des CTA sont statiques (lien ou submit). `.ast
 
 ```astro
 ---
+import { cn } from '@/utils'
+
 type ButtonVariant = 'primary' | 'secondary' | 'outline'
 
 interface Props {
@@ -296,15 +298,18 @@ interface Props {
 
 const { variant = 'primary', href, class: className, disabled } = Astro.props
 
+const BASE =
+  'inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium text-sm transition-colors duration-200'
+
 const VARIANT: Record<ButtonVariant, string> = {
-  primary: 'bg-primary hover:bg-primary-dark text-white shadow-sm',
-  secondary: 'bg-accent hover:bg-accent-dark text-white shadow-sm',
-  outline: 'border border-primary text-primary hover:bg-primary-light',
+  primary: 'bg-primary hover:bg-primary-deep text-white shadow-sm',
+  secondary: 'bg-accent hover:bg-accent-deep text-white shadow-sm',
+  outline: 'border border-primary text-primary hover:bg-primary/10',
 }
 
-const DISABLED = 'bg-border text-text-secondary/50 cursor-not-allowed'
-const BASE = 'inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium text-sm transition-colors duration-200'
-const cls = `${BASE} ${disabled ? DISABLED : VARIANT[variant]} ${className ?? ''}`
+const DISABLED = 'bg-rule text-fg-3 cursor-not-allowed'
+
+const cls = cn(BASE, disabled ? DISABLED : VARIANT[variant], className)
 ---
 
 {href ? (
@@ -313,6 +318,8 @@ const cls = `${BASE} ${disabled ? DISABLED : VARIANT[variant]} ${className ?? ''
   <button class={cls} disabled={disabled}><slot /></button>
 )}
 ```
+
+**Pourquoi `cn()` plutôt que concat template string** : `cn()` est défini dans `src/utils/index.ts` (clsx + tailwind-merge) — son rôle est de **fusionner** les classes Tailwind en cassant les conflits (ex: si `className` passé par le parent contient `bg-error`, il écrase proprement `bg-primary` de la variant). La concat template string ne fait pas ça : les deux classes coexistent, Tailwind prend la dernière déclarée dans son output, comportement fragile. Règle : **toujours `cn()` dès qu'un composant peut recevoir des classes par prop**.
 
 Pour les atoms interactifs (formulaires, toaster), créer un `.tsx` React avec island (cf. §3.7).
 
@@ -323,7 +330,58 @@ Pour les atoms interactifs (formulaires, toaster), créer un `.tsx` React avec i
 - `<slot />` pour contenu page.
 - Footer minimal en bas, header en haut si organism `Header.astro` existe.
 
-### 3.7 Islands React (si interactivité)
+### 3.7 Content collections — `src/content.config.ts`
+
+**Règle d'import Zod en projet Astro** :
+
+- **Schémas de content collections** : `import { z } from 'astro/zod'` (Astro 6+). Le `z` exporté par `astro/zod` re-exporte Zod v4 garantie alignée avec celle qu'Astro utilise en interne. Pas besoin d'installer `zod` séparément si c'est la seule utilisation.
+- `import { z } from 'astro:content'` est **deprecated** (Astro 6) — ne pas l'utiliser.
+- **Zod hors content collections** (formulaires, frontières HTTP/CMS, schémas domain) : `import { z } from 'zod'` direct. Indépendant d'Astro, contrôle de version explicite.
+
+Exemple type pour le métier site vitrine :
+
+```ts
+// src/content.config.ts
+import { defineCollection } from 'astro:content'
+import { z } from 'astro/zod'
+import { glob } from 'astro/loaders'
+
+const blog = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    publishedAt: z.coerce.date(),
+    updatedAt: z.coerce.date().optional(),
+    tags: z.array(z.string()).default([]),
+    draft: z.boolean().default(false),
+  }),
+})
+
+const caseStudies = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/case-studies' }),
+  schema: z.object({
+    client: z.string(),
+    sector: z.string(),
+    summary: z.string(),
+    publishedAt: z.coerce.date(),
+    metrics: z
+      .object({
+        trafficBefore: z.number().optional(),
+        trafficAfter: z.number().optional(),
+        timeframeMonths: z.number().optional(),
+      })
+      .optional(),
+    draft: z.boolean().default(false),
+  }),
+})
+
+export const collections = { blog, caseStudies }
+```
+
+Schémas typés à adapter au métier acquitté en Phase 2 — ne pas générer toutes les collections "au cas où". Si V1 n'a qu'un blog, ne déclare que `blog`. Le filtre fondamental s'applique aussi aux content collections.
+
+### 3.8 Islands React (si interactivité)
 
 Pour formulaire de contact :
 - `src/components/molecules/ContactForm.tsx` (React + react-hook-form + Zod + Sonner toast).
@@ -340,7 +398,7 @@ import ContactForm from '@/components/molecules/ContactForm'
 
 **Règle dure** : hydratation parcimonieuse. Tout en `client:load` = perd l'avantage Astro. Audit ensuite avec `/audit-site-vitrine`.
 
-### 3.8 CMS Directus (si Q4=B)
+### 3.9 CMS Directus (si Q4=B)
 
 `src/infrastructure/directus.ts` minimal :
 
@@ -353,13 +411,13 @@ export const directus = createDirectus(import.meta.env.DIRECTUS_URL)
 
 Types via `src/domain/<concept>/<Concept>.schema.ts` (Zod SSOT, cf. `typescript.md` §2). Pas de wrapper Repository — `directus.request(readItems(...))` direct dans la page, parse Zod en sortie.
 
-### 3.9 i18n (si Q3=oui)
+### 3.10 i18n (si Q3=oui)
 
-- `src/pages/[lang]/...` ou structure par locale selon préférence Astro 5.
+- `src/pages/[lang]/...` ou structure par locale selon préférence Astro (latest).
 - `src/i18n/{fr,en}.json` pour traductions inline.
 - Helper `t(key, lang)` simple (philosophy §4 — pas i18next sauf besoin réel).
 
-### 3.10 `docs/conventions.md`
+### 3.11 `docs/conventions.md`
 
 Crée à la racine avec :
 - Adapter retenu, langues, posture tokens, CMS oui/non, choix linter.
