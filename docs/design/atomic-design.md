@@ -39,7 +39,19 @@
 
 **Variants — `tailwind-variants` ou `cva`** : pour gérer les variantes d'un composant (taille, intent, état). Choix selon framework et lib disponible. Pas de concaténation manuelle de `className` (cf. §11).
 
-**Merge de classes — `cn` / `clsx` + `tailwind-merge`** : helper standard pour combiner classes conditionnelles et résoudre les conflits Tailwind (`p-2` + `p-4` → `p-4`). Un seul helper exporté à la racine du DS (`lib/cn.ts`).
+**Merge de classes — décomposer deux besoins distincts** :
+
+1. **Concaténation conditionnelle** (assembler `BASE` + variant + classes parent) — solution dépend du framework :
+   - **React** : `cn()` = `clsx` + `tailwind-merge`, helper unique exporté à la racine du DS (`lib/cn.ts` ou `utils/cn.ts`). Indispensable car React n'a pas de syntaxe native pour ça.
+   - **Vue 3** : pas besoin de `cn()` — `:class` natif accepte un object (`{ 'bg-primary': isPrimary }`) ou un array, gère la concat conditionnelle élégamment.
+   - **Svelte 5** : pareil — `class:foo={cond}` natif.
+
+2. **Résolution sémantique des conflits Tailwind** (`p-2` + `p-4` → `p-4` doit l'emporter) — **`tailwind-merge` est nécessaire dans tous les frameworks** dès qu'un composant accepte un override de classes par prop. Vue/Svelte concatènent élégamment via leur syntaxe native, mais ne résolvent pas les conflits Tailwind sémantiquement — c'est la cascade CSS qui décide, donc l'ordre alphabétique du build Tailwind, donc imprévisible.
+   - **React** : `tailwind-merge` est déjà inclus dans `cn()` (`twMerge(clsx(...))`).
+   - **Vue** : appel manuel à `twMerge()` sur la string finale, ou via directive type `tailwind-merge-vue-directive`.
+   - **Svelte** : appel manuel à `twMerge()` également.
+
+**Règle SSOT** : dès qu'un composant a un escape hatch `class`/`className` qui peut entrer en conflit avec ses classes internes, `tailwind-merge` doit être dans la chaîne. La concat conditionnelle elle s'appuie sur le natif du framework (Vue/Svelte) ou un helper dédié (React).
 
 **Variants — pattern `Record<Variant, classes>` par défaut** : une map littérale typée qui projette chaque variant vers ses classes Tailwind. Sans dépendance, types inférés, lisible. Pas de chaînes de `switch/case` ni de helpers `getXxxStyle` cumulés (cf. §13 smells).
 
@@ -53,7 +65,7 @@ const VARIANT: Record<ButtonVariant, string> = {
 
 Bascule vers **`tailwind-variants` (`tv`)** sur signal réel : variants combinatoires avec `compoundVariants` (`primary + disabled = opacity-50` exprimé déclarativement), `slots` pour compound components, ≥3 axes croisés (intent × size × tone). Pas par anticipation — émergence au besoin (philosophy §4).
 
-`clsx` + `tailwind-merge` (déjà dans `cn`) reste la couche d'assemblage : `cn(BASE, VARIANT[variant], SIZE[size], className)`.
+L'assemblage type est `cn(BASE, VARIANT[variant], SIZE[size], className)` en React. En Vue : `:class="[BASE, VARIANT[variant], SIZE[size], twMerge(props.class)]"` (ou directive). En Svelte : équivalent avec `class:` natif + `twMerge`.
 
 **Atelier de composants** : pas de convention forte. Storybook/Histoire si le projet justifie ; pages dédiées `/_dev/components` (ou route équivalente) si volume réduit. À discuter avec l'utilisateur — philosophy §4.
 
@@ -507,7 +519,7 @@ src/
 - *State global partagé* → `stores/` (Zustand). State stateful local au composant → `useState`/`ref`/`$state` dans le composant (cf. §6).
 - *Hook transverse non métier* → `hooks/`. Hook métier → `domain/<concept>/`.
 - *Lien à une API technique externe* (Tauri, SDK, client tiers) → `lib/`.
-- *Helpers techniques* (`cn`, formatters, parsers utilitaires) → `utils/`.
+- *Helpers techniques* (formatters, parsers, `cn` en React ou `twMerge` direct en Vue/Svelte — cf. §2) → `utils/`.
 - *Branche données + layout* → routing du framework (`app/`, `pages/`, `routes/`).
 
 **Promotion** : un organism métier promu vers `components/organisms/` uniquement quand il devient générique (≥2 concepts l'utilisent à l'identique). Sinon il reste dans son slice. Cf. philosophy §6 — un composant à un seul consommateur appartient à ce consommateur.
@@ -562,7 +574,7 @@ Détails dans `typescript.md` §10 (et équivalents par langage). Rappels invari
 | # | Anti-pattern | À la place |
 |---|---|---|
 | 1 | Valeur visuelle en dur (`bg-blue-500`, `#fff`, `16px`) dans un composant | Token sémantique (`bg-surface-primary`, `p-md`) |
-| 2 | Concaténation manuelle de classes (`${a} ${b ? 'x' : 'y'}`) | `cn(...)` (`clsx` + `tailwind-merge`) |
+| 2 | Concaténation manuelle de classes (`${a} ${b ? 'x' : 'y'}`) puis classes Tailwind en conflit non résolues | Selon framework : `cn(...)` en React, `:class` natif en Vue, `class:` en Svelte — **toujours combiné avec `tailwind-merge`** sur tout escape hatch `class`/`className` (cf. §2) |
 | 3 | Atom métier (`UserAvatar` dans `ui/atoms/`) | Organism dans `domain/user/` |
 | 4 | Composant qui mute le domain (`img.status = …`) | Helper du concept (`Image.toProcessing(img)`) |
 | 5 | Atom branché au store global | Props uniquement pour atoms/molecules |
