@@ -45,7 +45,9 @@ Annoncer une phrase de cadrage : *"Je vais créer un site vitrine Astro 5 + Reac
 
 ## Étape 2 — Questions de cadrage
 
-Posture interactive (philosophy §8 INVARIANT). Pose les questions groupées avec hypothèse par défaut.
+Posture interactive (philosophy §1 et §8 INVARIANT). Pose les questions groupées avec hypothèse par défaut.
+
+**Hard rule (philosophy §1 INVARIANT bloquant)** : toutes les questions ci-dessous doivent recevoir réponse avant Étape 3. **Aucun fichier ne s'écrit tant qu'une question reste ouverte**. Si l'utilisateur veut "passer" une question, ré-énonce-la et signale qu'elle bloque — ne procède pas en silence avec un default ad-hoc, et ne dis pas *"je scaffold, tu me diras après"*.
 
 **Q1 — Métier du site** (philosophy §2)
 - En 2 lignes max : qui est l'utilisateur final, que vient-il faire, sur combien de pages clés ?

@@ -24,6 +24,8 @@ Bloc à traiter après usage réel des skills `/bootstrap-site-vitrine`, `/boots
 
 - [ ] **Choix du CMS dans `bootstrap-site-vitrine`** — Directus est actuellement imposé comme default sans le justifier ouvertement (cohérence avec `~/.claude/CLAUDE.md` global de l'auteur, mais arbitraire pour un lecteur externe). Trois options à arbitrer : (a) garder Directus default explicite avec justification, même statut que Tauri/Astro ; (b) en faire une question ouverte avec Directus suggestion ; (c) lister 2-3 CMS courants (Directus, Strapi, Sanity, Payload) avec critères de choix. Première remontée d'usage réel — 2026-05-20.
 
+- [x] **Posture interactive non-opposable** (résolu 2026-05-20) — première friction d'usage réel : le LLM a identifié que des questions métier manquaient, l'a annoncé, **puis a continué quand même** en disant *"je scaffold, tu me diras après"*. Cause racine : l'INVARIANT §1 *"pose la question avant d'écrire"* laissait la marge de rationaliser. Correction posée : §1 renforcé en "interactivité **bloquante**" + anti-pattern explicite nommé dans §8 *"Ne pas faire"* + hard rule en début d'Étape 2 de chaque bootstrap skill. À ré-observer en prochaine session.
+
 Méthode d'observation : noter au fil des sessions les **frictions concrètes** (ce que le LLM a chargé vs ce dont il avait besoin, où il a dérivé en fin de session, où l'utilisateur a dû rappeler à l'ordre). Pas de mesure synthétique en avance — signaux qualitatifs d'abord.
 
 ---

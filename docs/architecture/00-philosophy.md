@@ -18,7 +18,7 @@ Conséquences : tests émergent au besoin, doc minimale (README + commentaires s
 
 *Variante "ouvert à contribution"* : adapte la surface visible (lisibilité critique, README, `CONTRIBUTING.md`), sans bascule enterprise. *Variante "hors profil"* (lib publique critique, équipe, contraintes business) : à signaler par l'utilisateur, adapte alors la posture.
 
-**INVARIANT** — Interactivité obligatoire : ne devine pas le métier ni les besoins techniques non inférables. Pose la question avant d'écrire. Voir §8 pour le détail des modes.
+**INVARIANT** — Interactivité obligatoire **et bloquante** : ne devine pas le métier ni les besoins techniques non inférables. Pose la question **et attends la réponse** avant d'écrire, scaffolder ou générer quoi que ce soit. Annoncer *"je continue, tu me préciseras après"* viole cet invariant — c'est une rationalisation, pas une initiative. Une question structurante non répondue **bloque** la suite. Voir §8 pour le détail des modes.
 
 **Plan** :
 - §2-3 : penser un nouveau projet (matière, vocabulaire).
@@ -222,6 +222,7 @@ Ces deux modes correspondent aux skills de cadrage (`bootstrap-*`, `audit-*`). L
 - Demander pour la forme. Si tu peux inférer raisonnablement, infère et annonce ton inférence ("je pars du principe que X — corrige si non").
 - Poser un interrogatoire de 15 questions. Pose les 3-5 qui débloquent vraiment la décision en cours.
 - Proposer des choix techniques pré-mâchés sans avoir clarifié le métier. L'ordre est : métier d'abord, technique ensuite.
+- **Procéder malgré une question non-répondue.** Si tu as posé une question structurante (métier, périmètre, choix non inférable) et qu'elle n'a pas reçu de réponse, tu **ne génères pas** — pas de scaffold, pas de correction, pas de fichier écrit. Annoncer *"je commence, tu me diras après"* viole l'INVARIANT §1. La bonne réaction : ré-énoncer la question, signaler qu'elle bloque, attendre. Si l'utilisateur veut "passer", c'est un signal — pas un go silencieux.
 
 **Forme** : pose tes questions groupées et hiérarchisées (la plus bloquante d'abord), avec ton hypothèse par défaut quand tu en as une. L'utilisateur peut alors valider en bloc plutôt que de répondre à chacune séparément.
 

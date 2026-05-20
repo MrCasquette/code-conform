@@ -46,6 +46,8 @@ Inspecter le dossier cible :
 
 Pose les questions une par une, attends les réponses. Capture dans `docs/conventions.md`.
 
+**Hard rule (philosophy §1 INVARIANT bloquant)** : toutes les questions doivent recevoir réponse avant Étape 3. **Aucun fichier ne s'écrit tant qu'une question reste ouverte**. Pas de *"je scaffold, tu me diras après"* — c'est une violation, pas une initiative.
+
 **Q1 — Métier de l'app ?**
 Une phrase. Sert à orienter persistance, multi-window, plugins.
 

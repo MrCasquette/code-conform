@@ -31,7 +31,9 @@ Annonce à l'utilisateur ce que tu as détecté en une phrase, puis enchaîne le
 
 ## Étape 2 — Questions de cadrage
 
-Posture code-conform (philosophy §8 INVARIANT) : ne devine pas les choix non inférables. Pose 3-5 questions groupées, avec ton hypothèse par défaut quand pertinent. L'utilisateur valide en bloc.
+Posture code-conform (philosophy §1 et §8 INVARIANT) : ne devine pas les choix non inférables. Pose 3-5 questions groupées, avec ton hypothèse par défaut quand pertinent. L'utilisateur valide en bloc.
+
+**Hard rule (philosophy §1 INVARIANT bloquant)** : toutes les questions doivent recevoir réponse avant Étape 3. **Aucun fichier ne s'écrit tant qu'une question reste ouverte**. Pas de *"je pose le squelette, tu choisiras la posture tokens après"*.
 
 **Q1 — Posture tokens couleurs** (cf. `ui.md` §4)
 - (A) **Noms-marque directs** — palette identitaire (ex: `marsala`, `cream`, `gold`). Monothème.

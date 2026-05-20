@@ -40,6 +40,8 @@ Trois principes :
 
 Pose les questions séquentiellement. Capture chaque décision dans `docs/conventions.md` au fil de l'eau.
 
+**Hard rule (philosophy §1 INVARIANT bloquant)** : toutes les questions doivent recevoir réponse avant Étape 3. **Aucun fichier ne s'écrit tant qu'une question reste ouverte** — particulièrement critique ici, où des questions non répondues (couches actives, stack par couche, contrats) compromettent toute la cohérence système. Pas de *"je commence le squelette, tu me diras après"*.
+
 ### Q1 — Métier de l'app ?
 
 Une phrase. Sert à orienter tout le reste (média = stockage objet ; gestion = relationnel ; collab temps réel = WebSocket/SSE ; data-heavy = ETL/worker).
