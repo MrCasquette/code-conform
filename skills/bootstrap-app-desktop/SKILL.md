@@ -17,6 +17,21 @@ Si l'app a un serveur distant compagnon → c'est un projet **cloud** (`/bootstr
 - `~/.code-conform/docs/languages/rust.md` — côté `src-tauri/`.
 - `~/.code-conform/docs/design/atomic-design.md` — atomic, tokens structure, a11y. **Couche archi UI uniquement** — la dimension design pure (brand, palette, typographie character) est hors scope ce skill, voir `/design-system` à venir.
 
+## Hard rule — usage de la SSOT (INVARIANT)
+
+Quand tu écris du code couvert par la SSOT, tu **dois** consulter la section pertinente **au moment** d'écrire — pas en lecture inspirationnelle au démarrage. Charger les docs en début de session ≠ les avoir en mémoire au moment d'écrire 200 messages plus tard (dilution d'attention en long contexte, cf. `RATIONALE §12`).
+
+Concrètement :
+- **`Read` la section ciblée juste avant** de générer le fichier concerné (ex: `atomic-design.md §5` pour un composant, `§4` pour les tokens, `typescript.md §2` pour un schéma Zod, `rust.md` pour les commands Rust).
+- **Cite la phrase-clé ou le pattern exact** dans ton message ("j'applique le pattern `Record<Variant, classes>` de §5"), pas une reformulation de mémoire.
+
+Anti-patterns :
+- ✗ *"Je connais le pattern, je l'applique"* → dérive vers training data, pas vers SSOT.
+- ✗ Reformulation de mémoire → deviation invisible.
+- ✗ Charger la SSOT au démarrage puis ne plus la rouvrir → dilution garantie en fin de session.
+
+La SSOT est un **référentiel à consulter au moment d'écrire**, pas une lecture inspirationnelle.
+
 ## Default opinioné (avec justification)
 
 | Couche | Default | Raison |

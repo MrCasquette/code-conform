@@ -21,6 +21,21 @@ Si c'est un site vitrine sans backend custom → `/bootstrap-site-vitrine`.
 - `~/.code-conform/docs/design/atomic-design.md` — si client web et/ou desktop.
 - Skills compagnons (chaînables après ébauche) : `/bootstrap-app-desktop` (sous-bootstrap si couche desktop active). Direction artistique : `/design-system` (à venir).
 
+## Hard rule — usage de la SSOT (INVARIANT)
+
+Quand tu écris du code couvert par la SSOT, tu **dois** consulter la section pertinente **au moment** d'écrire — pas en lecture inspirationnelle au démarrage. Charger les docs en début de session ≠ les avoir en mémoire au moment d'écrire 200 messages plus tard (dilution d'attention en long contexte, cf. `RATIONALE §12`).
+
+Concrètement :
+- **`Read` la section ciblée juste avant** de générer le fichier concerné (ex: `typescript.md §2` pour un schéma Zod, `rust.md` pour le wiring serveur, `atomic-design.md §5` pour un composant côté web).
+- **Cite la phrase-clé ou le pattern exact** dans ton message ("j'applique le pattern de `typescript.md §X`"), pas une reformulation de mémoire.
+
+Anti-patterns :
+- ✗ *"Je connais le pattern, je l'applique"* → dérive vers training data, pas vers SSOT.
+- ✗ Reformulation de mémoire → deviation invisible.
+- ✗ Charger la SSOT au démarrage puis ne plus la rouvrir → dilution garantie en fin de session (particulièrement critique ici, projet multi-couches = sessions plus longues que la moyenne).
+
+La SSOT est un **référentiel à consulter au moment d'écrire**, pas une lecture inspirationnelle.
+
 ## Philosophie du skill
 
 Un projet cloud selfhostable **n'a pas** de stack par défaut universelle. Le default code-conform (TS partout) reste **legitime mais non imposé**. Le skill **arbitre** entre couches avec contraintes croisées, **ne décide pas seul**.

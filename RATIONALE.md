@@ -182,6 +182,27 @@ Choix retenu : (B). La Phase 4 (récap + validation explicite) couvre déjà le 
 
 ---
 
+## 9ter. Paradoxe d'opposabilité — où vit une règle pour qu'elle survive
+
+**Constat émergé en calibration** (2026-05-20) : une règle déposée *uniquement* dans `philosophy.md` (ou tout doc SSOT non-chargé d'office) souffre d'un paradoxe — *"pour savoir qu'il faut consulter la SSOT au moment d'écrire, encore faut-il l'avoir consultée"*. Si le LLM survole la SSOT au démarrage, ou pire ne la charge pas, la règle qu'elle contient sur sa propre consultation est inerte.
+
+**Conséquence** : tout principe **vraiment opposable** doit vivre dans au moins un emplacement **garanti chargé** au moment où il s'applique :
+
+| Emplacement | Garanti chargé ? | Quand |
+|---|---|---|
+| Frontmatter + corps du SKILL.md invoqué | ✓ oui | À l'invocation du skill |
+| `~/.claude/CLAUDE.md` global | ✓ oui (si présent) | À chaque session Claude Code |
+| `~/.code-conform/docs/00-philosophy.md` | ⚠ seulement si chargé par skill ou CLAUDE.md | Variable |
+| Autres SSOT (`atomic-design.md`, `typescript.md`, etc.) | ⚠ seulement si instruction explicite | Variable |
+
+**Pattern retenu** : pour les règles qui **gouvernent la consultation de la SSOT elle-même** (ex: *"consulte la section au moment d'écrire, pas en lecture inspirationnelle"*), la duplication ciblée dans chaque SKILL.md concerné est **indispensable**, malgré le coût de redondance (~10 lignes copiées par skill).
+
+C'est une exception consciente à `RATIONALE §9bis` (préférer reformulation à ajout) — l'opposabilité prime sur l'économie quand un principe est méta (gouverne l'utilisation des autres règles).
+
+**Effet secondaire à observer** : ces 10 lignes copiées vivent en haut du SKILL.md, donc lues tôt dans la session. Théoriquement bien placées pour résister à la dilution. À mesurer en usage réel (cf. `RATIONALE §12`).
+
+---
+
 ## 10. Limites et zones non-traitées
 
 Reconnaissance honnête des angles qui ne sont **pas** couverts par le système actuel :
