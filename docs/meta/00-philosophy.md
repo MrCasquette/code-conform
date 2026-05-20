@@ -1,6 +1,6 @@
 # Méta-philosophie — règles de production et de calibration
 
-> Ce document est le **miroir** de `docs/architecture/00-philosophy.md`. Il ne te dit pas comment coder ou comment arbitrer dans un projet — il te dit **comment doit être écrit le doc philosophy lui-même**, et te donne la grille pour le **calibrer** (vérifier qu'il respecte ses propres règles).
+> Ce document est le **miroir** de `docs/00-philosophy.md`. Il ne te dit pas comment coder ou comment arbitrer dans un projet — il te dit **comment doit être écrit le doc philosophy lui-même**, et te donne la grille pour le **calibrer** (vérifier qu'il respecte ses propres règles).
 
 ---
 
@@ -14,7 +14,7 @@
 
 **Périmètre** : ce doc ne couvre pas les docs langage (`<langage>.md`) — voir `docs/meta/language.md`. Le contrat de densité, l'effet dilution et les smells de doc sont volontairement **dupliqués** entre les deux méta-docs (la vérité doit être présente là où elle est attendue, pas centralisée et diluée).
 
-**Profil de projet visé** : ce méta-doc ne prescrit aucun profil utilisateur particulier — il prescrit qu'**un profil soit posé** dans le doc philosophy audité. Le profil de référence pour ce repo (sustainable solo craft) est posé dans `docs/architecture/00-philosophy.md` §1, pas ici. Pour un philosophy destiné à un autre profil (équipe, MVP, enterprise…), ce méta reste applicable.
+**Profil de projet visé** : ce méta-doc ne prescrit aucun profil utilisateur particulier — il prescrit qu'**un profil soit posé** dans le doc philosophy audité. Le profil de référence pour ce repo (sustainable solo craft) est posé dans `docs/00-philosophy.md` §1, pas ici. Pour un philosophy destiné à un autre profil (équipe, MVP, enterprise…), ce méta reste applicable.
 
 **Limite assumée — piège miroir** : ce méta-doc partage par construction les biais cognitifs de l'auteur du doc philosophy qu'il audite (les deux ont été conçus dans la même conversation). Il vérifie ce qu'il sait reconnaître, pas ce qu'il aurait dû exiger. Pour un audit plus exigeant, soumettre le doc audité à un LLM frais — qui n'a écrit ni le philosophy ni ce méta — en lui demandant de produire ses propres sondes à partir du doc audité seul, puis comparer.
 

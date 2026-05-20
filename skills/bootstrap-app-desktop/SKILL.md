@@ -12,10 +12,10 @@ Si l'app a un serveur distant compagnon → c'est un projet **cloud** (`/bootstr
 
 ## Pré-requis — SSOT à charger
 
-- `~/.code-conform/docs/architecture/00-philosophy.md` — invariants, posture interactive (§1, §8).
-- `~/.code-conform/docs/architecture/typescript.md` — frontière Zod, idiomes TS.
-- `~/.code-conform/docs/architecture/rust.md` — côté `src-tauri/`.
-- `~/.code-conform/docs/architecture/atomic-design.md` — atomic, tokens structure, a11y. **Couche archi UI uniquement** — la dimension design pure (brand, palette, typographie character) est hors scope ce skill, voir `/design-system` à venir.
+- `~/.code-conform/docs/00-philosophy.md` — invariants, posture interactive (§1, §8).
+- `~/.code-conform/docs/languages/typescript.md` — frontière Zod, idiomes TS.
+- `~/.code-conform/docs/languages/rust.md` — côté `src-tauri/`.
+- `~/.code-conform/docs/design/atomic-design.md` — atomic, tokens structure, a11y. **Couche archi UI uniquement** — la dimension design pure (brand, palette, typographie character) est hors scope ce skill, voir `/design-system` à venir.
 
 ## Default opinioné (avec justification)
 

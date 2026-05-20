@@ -1,6 +1,6 @@
 # Méta-langage — règles de production et de calibration des docs `<langage>.md`
 
-> Ce document est le **miroir** des docs `docs/architecture/<langage>.md` (existants ou à créer). Il ne t'apprend pas à écrire du code dans un langage — il te dit **comment doit être écrit un doc langage**, et te donne la grille pour le **calibrer** ou le **produire from scratch**.
+> Ce document est le **miroir** des docs `docs/languages/<langage>.md` (existants ou à créer). Il ne t'apprend pas à écrire du code dans un langage — il te dit **comment doit être écrit un doc langage**, et te donne la grille pour le **calibrer** ou le **produire from scratch**.
 
 ---
 
@@ -12,15 +12,15 @@
 
 **Public** : LLM (toi) qui édite, audite, ou crée un doc langage. Pas un humain qui apprend l'architecture ou un langage.
 
-**Périmètre** : ce doc ne couvre pas le doc philosophique (`docs/architecture/00-philosophy.md`) — voir `docs/meta/00-philosophy.md`. Le **contrat de densité, l'effet dilution et les smells de doc** sont volontairement **dupliqués** entre les deux méta-docs (la vérité doit être présente là où elle est attendue, pas centralisée et diluée).
+**Périmètre** : ce doc ne couvre pas le doc philosophique (`docs/00-philosophy.md`) — voir `docs/meta/00-philosophy.md`. Le **contrat de densité, l'effet dilution et les smells de doc** sont volontairement **dupliqués** entre les deux méta-docs (la vérité doit être présente là où elle est attendue, pas centralisée et diluée).
 
-**Profil de projet visé** : ce méta-doc ne prescrit aucun profil — il prescrit qu'un profil soit posé en amont (dans le doc philosophy chargé conjointement). Le profil de référence pour ce repo (sustainable solo craft) est posé dans `docs/architecture/00-philosophy.md` §1.
+**Profil de projet visé** : ce méta-doc ne prescrit aucun profil — il prescrit qu'un profil soit posé en amont (dans le doc philosophy chargé conjointement). Le profil de référence pour ce repo (sustainable solo craft) est posé dans `docs/00-philosophy.md` §1.
 
-**Limite assumée — piège miroir** : ce méta-doc partage par construction les biais cognitifs de l'auteur des docs langage qu'il audite ou cadre. Il vérifie et oriente ce qu'il sait reconnaître, pas ce qu'il aurait dû exiger. Pour un audit plus exigeant, soumettre le doc audité à un LLM frais — qui n'a écrit ni le philosophy ni les docs langage ni ce méta — en lui donnant `docs/architecture/00-philosophy.md` et en lui demandant de produire ses propres sondes, puis comparer.
+**Limite assumée — piège miroir** : ce méta-doc partage par construction les biais cognitifs de l'auteur des docs langage qu'il audite ou cadre. Il vérifie et oriente ce qu'il sait reconnaître, pas ce qu'il aurait dû exiger. Pour un audit plus exigeant, soumettre le doc audité à un LLM frais — qui n'a écrit ni le philosophy ni les docs langage ni ce méta — en lui donnant `docs/00-philosophy.md` et en lui demandant de produire ses propres sondes, puis comparer.
 
 **Pré-requis stricts de chargement** :
 
-- **Mode production from scratch** (création d'un nouveau doc langage) : ce méta seul est **insuffisant**. Charger conjointement `docs/architecture/00-philosophy.md`. Sans philosophy, le doc produit aura systématiquement les angles morts suivants : profil cible jamais nommé, INVARIANTS hérités de philosophy non marqués (interactivité obligatoire, métier ne s'infère pas, pas de seuil chiffré unilatéral), triade des sources de vérité (architecture / conventions projet / utilisateur) non posée explicitement, renvois `cf. philosophy §X` potentiellement hallucinés. Si tu ne disposes pas de `philosophy.md`, **demande-le à l'utilisateur avant de rédiger** — ne devine pas son contenu.
+- **Mode production from scratch** (création d'un nouveau doc langage) : ce méta seul est **insuffisant**. Charger conjointement `docs/00-philosophy.md`. Sans philosophy, le doc produit aura systématiquement les angles morts suivants : profil cible jamais nommé, INVARIANTS hérités de philosophy non marqués (interactivité obligatoire, métier ne s'infère pas, pas de seuil chiffré unilatéral), triade des sources de vérité (architecture / conventions projet / utilisateur) non posée explicitement, renvois `cf. philosophy §X` potentiellement hallucinés. Si tu ne disposes pas de `philosophy.md`, **demande-le à l'utilisateur avant de rédiger** — ne devine pas son contenu.
 
 - **Mode calibration** (audit d'un doc langage existant) : ce méta seul peut suffire pour les vérifications mécaniques (greps, présence des axes, conformité au contrat de densité). Pour les vérifications de cohérence avec philosophy (INVARIANTS, triade, renvois croisés), chargement de `philosophy.md` recommandé.
 

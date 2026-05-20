@@ -1,6 +1,6 @@
 # Idiomes Rust
 
-> Traduction de `docs/architecture/00-philosophy.md` en idiomes Rust. À charger conjointement avec philosophy. Les principes (defaults, exceptions, invariants) vivent dans philosophy — ce doc donne les **formes** Rust.
+> Traduction de `docs/00-philosophy.md` en idiomes Rust. À charger conjointement avec philosophy. Les principes (defaults, exceptions, invariants) vivent dans philosophy — ce doc donne les **formes** Rust.
 
 ---
 

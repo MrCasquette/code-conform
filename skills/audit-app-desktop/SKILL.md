@@ -13,10 +13,10 @@ Si c'est un SPA web sans `src-tauri/` → `/audit-site-vitrine` ou `/audit-saas`
 
 ## Pré-requis — SSOT à charger
 
-- `~/.code-conform/docs/architecture/00-philosophy.md` — mode audit (§8), filtre fondamental.
-- `~/.code-conform/docs/architecture/typescript.md` — frontière, idiomes TS.
-- `~/.code-conform/docs/architecture/rust.md` — côté `src-tauri/`.
-- `~/.code-conform/docs/architecture/atomic-design.md` — atomic, tokens structure, a11y, smells. Couvre l'archi UI ; pas la dimension design pure (brand, ambiance).
+- `~/.code-conform/docs/00-philosophy.md` — mode audit (§8), filtre fondamental.
+- `~/.code-conform/docs/languages/typescript.md` — frontière, idiomes TS.
+- `~/.code-conform/docs/languages/rust.md` — côté `src-tauri/`.
+- `~/.code-conform/docs/design/atomic-design.md` — atomic, tokens structure, a11y, smells. Couvre l'archi UI ; pas la dimension design pure (brand, ambiance).
 - `docs/conventions.md` du projet si présent.
 
 ## Étape 1 — Cartographie

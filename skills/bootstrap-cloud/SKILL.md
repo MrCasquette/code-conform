@@ -15,10 +15,10 @@ Si c'est un site vitrine sans backend custom → `/bootstrap-site-vitrine`.
 
 ## Pré-requis — SSOT à charger
 
-- `~/.code-conform/docs/architecture/00-philosophy.md` — invariants, posture interactive (§1, §8), filtre fondamental (§4).
-- `~/.code-conform/docs/architecture/typescript.md` — si JS/TS dans le système.
-- `~/.code-conform/docs/architecture/rust.md` — si Rust dans le système.
-- `~/.code-conform/docs/architecture/atomic-design.md` — si client web et/ou desktop.
+- `~/.code-conform/docs/00-philosophy.md` — invariants, posture interactive (§1, §8), filtre fondamental (§4).
+- `~/.code-conform/docs/languages/typescript.md` — si JS/TS dans le système.
+- `~/.code-conform/docs/languages/rust.md` — si Rust dans le système.
+- `~/.code-conform/docs/design/atomic-design.md` — si client web et/ou desktop.
 - Skills compagnons (chaînables après ébauche) : `/bootstrap-app-desktop` (sous-bootstrap si couche desktop active). Direction artistique : `/design-system` (à venir).
 
 ## Philosophie du skill
@@ -199,9 +199,9 @@ Arborescence générée (les sections sans couche active sont omises) :
 ## SSOT manquantes (à produire avant usage réel)
 
 Pour que ce skill soit utilisable à 100%, il faudra produire (selon stacks choisies) :
-- `docs/architecture/go.md` si Go fréquent côté serveur.
-- `docs/architecture/php.md` si PHP cible.
-- `docs/architecture/python.md` si Python cible.
-- `docs/architecture/contracts.md` (méta) : OpenAPI vs proto vs package TS partagé, conventions de codegen.
+- `docs/languages/go.md` si Go fréquent côté serveur.
+- `docs/languages/php.md` si PHP cible.
+- `docs/languages/python.md` si Python cible.
+- `docs/contracts.md` (méta) : OpenAPI vs proto vs package TS partagé, conventions de codegen.
 
 À traquer dans BACKLOG.md.

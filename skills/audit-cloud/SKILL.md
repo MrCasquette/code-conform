@@ -14,9 +14,9 @@ Si le projet est vide → `/bootstrap-cloud`.
 
 ## Pré-requis — SSOT à charger
 
-- `~/.code-conform/docs/architecture/00-philosophy.md` — mode audit (§8), invariants.
-- `~/.code-conform/docs/architecture/typescript.md`, `rust.md` — selon couches détectées.
-- `~/.code-conform/docs/architecture/atomic-design.md` — pour couches client (archi UI ; pas la dimension design pure).
+- `~/.code-conform/docs/00-philosophy.md` — mode audit (§8), invariants.
+- `~/.code-conform/docs/languages/typescript.md`, `rust.md` — selon couches détectées.
+- `~/.code-conform/docs/design/atomic-design.md` — pour couches client (archi UI ; pas la dimension design pure).
 - `~/.code-conform/skills/audit-site-vitrine/SKILL.md`, `audit-app-desktop/SKILL.md` — sous-audits par couche.
 - `docs/conventions.md` du projet si présent.
 
@@ -213,10 +213,10 @@ Pour chaque lot : fichiers concernés, diff représentatif, accord, application,
 
 ## SSOT manquantes (à produire pour audit complet)
 
-- `docs/architecture/go.md` — pour audits couche serveur Go.
-- `docs/architecture/php.md` — pour audits couche serveur PHP.
-- `docs/architecture/python.md` — si Python cible.
-- `docs/architecture/contracts.md` (méta) — OpenAPI vs proto vs TS partagé, conventions codegen.
-- `docs/architecture/database.md` (éventuel) — conventions migrations, naming SQL, choix PG/SQLite par contexte.
+- `docs/languages/go.md` — pour audits couche serveur Go.
+- `docs/languages/php.md` — pour audits couche serveur PHP.
+- `docs/languages/python.md` — si Python cible.
+- `docs/contracts.md` (méta) — OpenAPI vs proto vs TS partagé, conventions codegen.
+- `docs/database.md` (éventuel) — conventions migrations, naming SQL, choix PG/SQLite par contexte.
 
 À traquer dans `BACKLOG.md`.

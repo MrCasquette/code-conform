@@ -10,7 +10,7 @@ Un LLM peut écrire du code qui marche sans difficulté. Le problème n'est pas 
 
 `code-conform` pose deux choses :
 
-1. **Une SSOT documentaire** (`docs/architecture/`) — invariants, idiomes par langage, conventions UI. Le LLM la charge en contexte avant chaque génération ou audit.
+1. **Une SSOT documentaire** (`docs/`) — invariants racines (`00-philosophy.md`), idiomes par langage (`languages/`), conventions design UI (`design/`). Le LLM la charge en contexte avant chaque génération ou audit.
 2. **Des skills opérationnels** (`skills/`) — couples `bootstrap-*` (créer un projet conforme) et `audit-*` (mesurer un projet existant vs la SSOT, proposer des corrections par lot validées).
 
 Le nom dit la fonction : **conformer** le code, à l'init comme à l'audit, à un référentiel cohérent (structure + conventions + logique).
@@ -21,7 +21,7 @@ Le nom dit la fonction : **conformer** le code, à l'init comme à l'audit, à u
 
 - **Posture par arbitrages, pas par dogmes** — chaque règle a un *default* + un *déclencheur d'exception*, ou est marquée **INVARIANT** explicite.
 - **Profil ciblé : *sustainable solo craft*** — dev solo, cycle long, pas de pression business immédiate. Ni MVP jetable, ni système enterprise.
-- **Interactivité obligatoire** — le LLM demande à l'utilisateur sur les choix non inférables (métier, contraintes projet, arbitrages techniques contextuels). Il ne devine pas (cf. `docs/architecture/00-philosophy.md` §1, INVARIANT).
+- **Interactivité obligatoire** — le LLM demande à l'utilisateur sur les choix non inférables (métier, contraintes projet, arbitrages techniques contextuels). Il ne devine pas (cf. `docs/00-philosophy.md` §1, INVARIANT).
 - **Pas de docs par lib/framework** — les opinions framework-spécifiques vivent dans les skills par contexte (`bootstrap-site-vitrine`, `bootstrap-app-desktop`…), pas dans des `react.md` / `next.md` qui dériveraient. Les SSOT couvrent les langages et axes transverses (UI, contrats…).
 
 ---
@@ -43,11 +43,12 @@ code-conform/
 ├── BACKLOG.md                     ← état des décisions, roadmap, itérations
 ├── install.sh                     ← installe docs/ et skills/ dans le home
 ├── docs/
-│   ├── architecture/              ← SSOT, chargée par les skills
-│   │   ├── 00-philosophy.md       ← invariants racines, agnostique langage
-│   │   ├── typescript.md          ← idiomes TS
-│   │   ├── rust.md                ← idiomes Rust
-│   │   └── atomic-design.md       ← archi UI : atomic design, tokens structure, composants, a11y
+│   ├── 00-philosophy.md           ← invariants racines, point d'entrée SSOT
+│   ├── languages/                 ← idiomes par langage
+│   │   ├── typescript.md
+│   │   └── rust.md
+│   ├── design/                    ← archi UI (+ futur brand-design.md)
+│   │   └── atomic-design.md       ← atomic design, tokens structure, composants, a11y
 │   └── meta/                      ← règles de production/calibration de la SSOT
 └── skills/
     ├── bootstrap-site-vitrine/    ← Astro 5 + React 19 + Tailwind v4
@@ -158,7 +159,7 @@ Tous les skills sont **opinionés** sur leur framework par défaut, mais **accep
 Tu peux choisir d'ajouter une ligne dans ton `CLAUDE.md` global pour signaler la SSOT au LLM en dehors des invocations de skills :
 
 ```markdown
-SSOT architecture (si pertinente) : `~/.code-conform/docs/architecture/`
+SSOT architecture (si pertinente) : `~/.code-conform/docs/` — philosophy à la racine, langages dans `languages/`, design UI dans `design/`.
 ```
 
 Trade-off à arbitrer toi-même :
@@ -186,7 +187,7 @@ Projet personnel, pas de processus formel de contribution. Évolutions :
 ## Pour aller plus loin
 
 - **`RATIONALE.md`** — pourquoi les choix structurels ont été faits ainsi (process de design, alternatives écartées).
-- **`docs/architecture/00-philosophy.md`** — la racine de la SSOT, point d'entrée du système. Tous les skills la chargent.
+- **`docs/00-philosophy.md`** — la racine de la SSOT, point d'entrée du système. Tous les skills la chargent.
 - **`BACKLOG.md`** — état actuel, ce qui reste à faire, SSOT manquantes (notamment `go.md` et `contracts.md` pour débloquer pleinement `/audit-cloud`).
 
 ---

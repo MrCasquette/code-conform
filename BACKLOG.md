@@ -83,7 +83,7 @@ Skills cibles initiaux :
   - Sentinelle `.installed-by-code-conform` posée dans chaque dossier installé → reconnaît ce qui est à nous lors d'un re-run (overwrite propre) ; les dossiers tiers sont sauvegardés en `.bak.<ts>`.
   - `docs/` → `~/.code-conform/docs/`.
   - `skills/<name>/` → `~/.claude/skills/<name>/` (un dossier par skill).
-- Les skills réfèrent à `~/.code-conform/docs/architecture/*` (path canonique, indépendant du repo source).
+- Les skills réfèrent à `~/.code-conform/docs/*` (path canonique, indépendant du repo source).
 - **Avantages** : repo peut bouger / disparaître sans casser l'installation. Update = re-lancer `./install.sh`.
 - Pas de publication, pas de packaging plugin, 100% local et privé.
 
@@ -103,16 +103,16 @@ Skills cibles initiaux :
 
 ## Roadmap SSOT — extensions à venir
 
-- [x] `docs/architecture/rust.md` — créé et calibré v1.0 (2026-05-16)
-- [x] `docs/architecture/atomic-design.md` — créé v1.0 (2026-05-16, renommé depuis `ui.md` le 2026-05-20). Couvre uniquement **l'archi UI** : Atomic Design + conventions composants + tokens **structure** + a11y + frontières. Cross-framework. Postures tokens A/B explicites, `Record<Variant>` par défaut.
-- [ ] **`docs/architecture/brand-design.md`** — futur doc compagnon (à créer avec `/design-system` skill). Dimension *design pure* : palette identitaire (hues OKLCH distinctifs), typographie character, anti-banal smells, ambiance, application brand assets, intégration Figma tokens si pertinent, UX/UI thinking sans brief. Chargé uniquement par `/design-system`. Pas chargé par bootstrap-* ni audit-* (qui restent strictement archi côté UI).
+- [x] `docs/languages/rust.md` — créé et calibré v1.0 (2026-05-16)
+- [x] `docs/design/atomic-design.md` — créé v1.0 (2026-05-16, renommé depuis `ui.md` le 2026-05-20). Couvre uniquement **l'archi UI** : Atomic Design + conventions composants + tokens **structure** + a11y + frontières. Cross-framework. Postures tokens A/B explicites, `Record<Variant>` par défaut.
+- [ ] **`docs/design/brand-design.md`** — futur doc compagnon (à créer avec `/design-system` skill). Dimension *design pure* : palette identitaire (hues OKLCH distinctifs), typographie character, anti-banal smells, ambiance, application brand assets, intégration Figma tokens si pertinent, UX/UI thinking sans brief. Chargé uniquement par `/design-system`. Pas chargé par bootstrap-* ni audit-* (qui restent strictement archi côté UI).
 - [x] `docs/meta/ui.md` — **abandonné** (2026-05-16). Pas de méta dédié : `docs/meta/language.md` a joué ce rôle pour la production de `atomic-design.md` (dérivée fonctionnelle du squelette langage avec adaptations documentées dans le préambule du doc).
-- [ ] `docs/architecture/monorepo.md` — si besoin réel émerge (workspaces pnpm/Bun, partage de packages domain)
-- [ ] **`docs/architecture/go.md`** — débloquerait `/audit-cloud` sur couche serveur Go. Priorité haute.
-- [ ] **`docs/architecture/contracts.md`** (méta) — OpenAPI vs proto vs package TS partagé, conventions codegen. Débloquerait l'axe F de `/audit-cloud` qui est le plus critique (INVARIANT philosophy §5).
-- [ ] `docs/architecture/php.md` — si projet PHP cible dans la roadmap selfhost.
-- [ ] `docs/architecture/python.md` — si projet Python cible.
-- [ ] `docs/architecture/database.md` (éventuel) — conventions migrations + naming SQL + arbitrage PG/SQLite par contexte. Optionnel si les langages serveurs couvrent déjà la partie persistance.
+- [ ] `docs/monorepo.md` — si besoin réel émerge (workspaces pnpm/Bun, partage de packages domain)
+- [ ] **`docs/languages/go.md`** — débloquerait `/audit-cloud` sur couche serveur Go. Priorité haute.
+- [ ] **`docs/contracts.md`** (méta) — OpenAPI vs proto vs package TS partagé, conventions codegen. Débloquerait l'axe F de `/audit-cloud` qui est le plus critique (INVARIANT philosophy §5).
+- [ ] `docs/languages/php.md` — si projet PHP cible dans la roadmap selfhost.
+- [ ] `docs/languages/python.md` — si projet Python cible.
+- [ ] `docs/database.md` (éventuel) — conventions migrations + naming SQL + arbitrage PG/SQLite par contexte. Optionnel si les langages serveurs couvrent déjà la partie persistance.
 - [x] `BRIEFING.md` supprimé (2026-05-16) — philosophy devenue SSOT racine autosuffisante
 - [x] **`philosophy §10` ajouté** (2026-05-20) — arbitrage langage par runtime. INVARIANT : typage statique strict obligatoire à runtime donné, JS pur banni sauf signal. Tableau runtime → langage default + bascules autorisées. Comble le trou "comment décider Nuxt=TS et pas JS" qui vivait jusqu'ici uniquement dans `~/.claude/CLAUDE.md` global (préférence personnelle, pas SSOT).
 

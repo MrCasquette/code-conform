@@ -11,9 +11,9 @@ Si le dossier cible n'est pas vide → **stop** et demande confirmation. Le skil
 
 ## Pré-requis — SSOT à charger
 
-- `~/.code-conform/docs/architecture/00-philosophy.md` — invariants, slicing vertical, filtre fondamental, posture interactive.
-- `~/.code-conform/docs/architecture/typescript.md` — Bun/pnpm, Zod, strict TS, conventions naming.
-- `~/.code-conform/docs/architecture/atomic-design.md` — atomic design (`src/components/`), tokens Tailwind v4, `Record<Variant>`, a11y. **Couche archi UI uniquement** — la dimension design pure (brand, palette identitaire, character typographique) est hors scope ce skill, voir `/design-system` à venir.
+- `~/.code-conform/docs/00-philosophy.md` — invariants, slicing vertical, filtre fondamental, posture interactive.
+- `~/.code-conform/docs/languages/typescript.md` — Bun/pnpm, Zod, strict TS, conventions naming.
+- `~/.code-conform/docs/design/atomic-design.md` — atomic design (`src/components/`), tokens Tailwind v4, `Record<Variant>`, a11y. **Couche archi UI uniquement** — la dimension design pure (brand, palette identitaire, character typographique) est hors scope ce skill, voir `/design-system` à venir.
 
 ## Pourquoi Astro v5 par défaut
 
@@ -282,7 +282,7 @@ Types via `src/domain/<concept>/<Concept>.schema.ts` (Zod SSOT, cf. `typescript.
 
 Crée à la racine avec :
 - Adapter retenu, langues, posture tokens, CMS oui/non, choix linter.
-- Renvoi à `~/.code-conform/docs/architecture/{philosophy,typescript,ui}.md`.
+- Renvoi à `~/.code-conform/docs/00-philosophy.md`, `~/.code-conform/docs/languages/typescript.md`, `~/.code-conform/docs/design/atomic-design.md`.
 
 ## Étape 4 — Validation
 

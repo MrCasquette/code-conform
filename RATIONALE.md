@@ -1,6 +1,6 @@
 # Rationale — choix de conception de code-conform
 
-> Justifications des choix structurels du système. Pour les principes d'architecture eux-mêmes, voir `docs/architecture/00-philosophy.md`. Ce document explique **pourquoi** code-conform est conçu comme il est, et **quelles alternatives ont été écartées**.
+> Justifications des choix structurels du système. Pour les principes d'architecture eux-mêmes, voir `docs/00-philosophy.md`. Ce document explique **pourquoi** code-conform est conçu comme il est, et **quelles alternatives ont été écartées**.
 
 ---
 

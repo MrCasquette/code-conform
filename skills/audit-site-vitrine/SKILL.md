@@ -11,9 +11,9 @@ Si le projet est vide → propose `/bootstrap-site-vitrine`. Si c'est un SaaS (a
 
 ## Pré-requis — SSOT à charger
 
-- `~/.code-conform/docs/architecture/00-philosophy.md` — invariants, mode audit (§8), filtre fondamental.
-- `~/.code-conform/docs/architecture/typescript.md` — strict TS, conventions naming.
-- `~/.code-conform/docs/architecture/atomic-design.md` — atomic, tokens structure, a11y, smells. Couvre l'archi UI ; pas la dimension design pure (brand, ambiance).
+- `~/.code-conform/docs/00-philosophy.md` — invariants, mode audit (§8), filtre fondamental.
+- `~/.code-conform/docs/languages/typescript.md` — strict TS, conventions naming.
+- `~/.code-conform/docs/design/atomic-design.md` — atomic, tokens structure, a11y, smells. Couvre l'archi UI ; pas la dimension design pure (brand, ambiance).
 - `docs/conventions.md` du projet si présent.
 
 ## Étape 1 — Cartographie
