@@ -228,100 +228,15 @@ src/
 
 ### 3.4 Helper `cn` + `@theme`
 
-**Helper `cn`** — `src/utils/index.ts` :
-
-```ts
-import clsx, { type ClassValue } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-
-export function cn(...inputs: ClassValue[]): string {
-  return twMerge(clsx(inputs))
-}
-```
-
-**`@theme` Tailwind v4** dans `src/styles/globals.css` (`@import "tailwindcss"` en tête). Selon posture tokens Q6 :
-
-- **Posture B (sémantique — default)** : tokens neutres réutilisables.
-
-```css
-@import "tailwindcss";
-
-@theme {
-  /* Surfaces */
-  --color-bg:        oklch(0.21 0.02 272);
-  --color-surface:   oklch(0.255 0.022 272);
-  --color-surface-2: oklch(0.3 0.025 272);
-
-  /* Encres */
-  --color-fg:   oklch(0.97 0.01 272);
-  --color-fg-2: oklch(0.82 0.012 272);
-  --color-fg-3: oklch(0.62 0.015 272);
-
-  /* Filets */
-  --color-rule:   oklch(0.32 0.02 272);
-  --color-rule-2: oklch(0.4 0.022 272);
-
-  /* Marque (placeholder neutre — à brander via /design-system) */
-  --color-primary:      oklch(0.56 0.08 273);
-  --color-primary-deep: oklch(0.42 0.10 273);
-
-  /* Sémantique (statuts toujours sémantiques même en posture A) */
-  --color-error:   oklch(0.65 0.16 20);
-  --color-success: oklch(0.78 0.18 156);
-  --color-warning: oklch(0.78 0.14 60);
-
-  /* Rayons */
-  --radius-md: 9px;
-}
-```
-
-- **Posture A (noms-marque)** : remplace les tokens neutres par les noms-marque convenus avec l'utilisateur. **Tokens de statut restent sémantiques** (`error`, `success`, `warning`) — règle dure cf. `atomic-design.md` §4.
+Reprends les recettes de `atomic-design.md` §2 (setup `cn` clsx + tailwind-merge dans `src/utils/index.ts`) et §4 (exemple `@theme` posture B sémantique OKLCH complet, ou posture A noms-marque selon Q6).
 
 Note : ce skill pose un **baseline architectural** avec des valeurs neutres. La direction artistique (palette définitive, typographie character, ambiance) relève du skill `/design-system` à invoquer séparément quand brand mûr.
 
 ### 3.5 Button de référence — `Button.astro`
 
-Sur un site vitrine, la majorité des CTA sont statiques (lien ou submit). `.astro` suffit, pas besoin de React :
+Sur un site vitrine, la majorité des CTA sont statiques (lien ou submit) → `.astro` suffit, pas besoin de React. Applique le pattern variants de `atomic-design.md` §5 et §8 (`Record<Variant, classes>` + `cn(BASE, VARIANT[variant], className)`), transposé dans un fichier `Button.astro` avec `Astro.props` au frontmatter et rendu via `<a>` ou `<button>` selon présence de `href`.
 
-```astro
----
-import { cn } from '@/utils'
-
-type ButtonVariant = 'primary' | 'secondary' | 'outline'
-
-interface Props {
-  variant?: ButtonVariant
-  href?: string
-  class?: string
-  disabled?: boolean
-}
-
-const { variant = 'primary', href, class: className, disabled } = Astro.props
-
-const BASE =
-  'inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium text-sm transition-colors duration-200'
-
-const VARIANT: Record<ButtonVariant, string> = {
-  primary: 'bg-primary hover:bg-primary-deep text-white shadow-sm',
-  secondary: 'bg-accent hover:bg-accent-deep text-white shadow-sm',
-  outline: 'border border-primary text-primary hover:bg-primary/10',
-}
-
-const DISABLED = 'bg-rule text-fg-3 cursor-not-allowed'
-
-const cls = cn(BASE, disabled ? DISABLED : VARIANT[variant], className)
----
-
-{href ? (
-  <a href={href} class={cls}><slot /></a>
-) : (
-  <button class={cls} disabled={disabled}><slot /></button>
-)}
-```
-
-**Pourquoi `cn()` plutôt que concat template string** : `cn()` est défini dans `src/utils/index.ts` (clsx + tailwind-merge) — son rôle est de **fusionner** les classes Tailwind en cassant les conflits (ex: si `className` passé par le parent contient `bg-error`, il écrase proprement `bg-primary` de la variant). La concat template string ne fait pas ça : les deux classes coexistent, Tailwind prend la dernière déclarée dans son output, comportement fragile. Règle : **toujours `cn()` dès qu'un composant peut recevoir des classes par prop**.
-
-Pour les atoms interactifs (formulaires, toaster), créer un `.tsx` React avec island (cf. §3.7).
+Pour les atoms interactifs (formulaires, toaster), créer un `.tsx` React (ou `.vue`/`.svelte` selon Q2) avec island, cf. §3.8.
 
 ### 3.6 Layout de base — `BaseLayout.astro`
 
@@ -332,16 +247,10 @@ Pour les atoms interactifs (formulaires, toaster), créer un `.tsx` React avec i
 
 ### 3.7 Content collections — `src/content.config.ts`
 
-**Règle d'import Zod en projet Astro** :
-
-- **Schémas de content collections** : `import { z } from 'astro/zod'` (Astro 6+). Le `z` exporté par `astro/zod` re-exporte Zod v4 garantie alignée avec celle qu'Astro utilise en interne. Pas besoin d'installer `zod` séparément si c'est la seule utilisation.
-- `import { z } from 'astro:content'` est **deprecated** (Astro 6) — ne pas l'utiliser.
-- **Zod hors content collections** (formulaires, frontières HTTP/CMS, schémas domain) : `import { z } from 'zod'` direct. Indépendant d'Astro, contrôle de version explicite.
-
-Exemple type pour le métier site vitrine :
+**Import Zod en projet Astro** : `import { z } from 'astro/zod'` pour les schémas de collections (`'astro:content'` est deprecated Astro 6 ; `astro/zod` re-exporte Zod v4 alignée avec l'API interne d'Astro). Garde `import { z } from 'zod'` direct pour le reste (formulaires, frontières HTTP, schémas domain hors Astro).
 
 ```ts
-// src/content.config.ts
+// src/content.config.ts (exemple minimal)
 import { defineCollection } from 'astro:content'
 import { z } from 'astro/zod'
 import { glob } from 'astro/loaders'
@@ -350,36 +259,15 @@ const blog = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
   schema: z.object({
     title: z.string(),
-    description: z.string(),
     publishedAt: z.coerce.date(),
-    updatedAt: z.coerce.date().optional(),
-    tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
   }),
 })
 
-const caseStudies = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/case-studies' }),
-  schema: z.object({
-    client: z.string(),
-    sector: z.string(),
-    summary: z.string(),
-    publishedAt: z.coerce.date(),
-    metrics: z
-      .object({
-        trafficBefore: z.number().optional(),
-        trafficAfter: z.number().optional(),
-        timeframeMonths: z.number().optional(),
-      })
-      .optional(),
-    draft: z.boolean().default(false),
-  }),
-})
-
-export const collections = { blog, caseStudies }
+export const collections = { blog }
 ```
 
-Schémas typés à adapter au métier acquitté en Phase 2 — ne pas générer toutes les collections "au cas où". Si V1 n'a qu'un blog, ne déclare que `blog`. Le filtre fondamental s'applique aussi aux content collections.
+Schémas à adapter au métier acquitté en Phase 2 — pas de collection "au cas où". Filtre fondamental philosophy §4 s'applique.
 
 ### 3.8 Islands React (si interactivité)
 
