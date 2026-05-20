@@ -4,6 +4,29 @@
 
 ---
 
+## État de calibration des skills (mis à jour 2026-05-20)
+
+Synthèse opérationnelle pour reprise rapide en nouvelle session. Détail des décisions et frictions plus bas dans le doc, contexte de design dans `RATIONALE.md`.
+
+- **`/bootstrap-site-vitrine`** v0.2 — calibré 3 sessions réelles (restaurant, wedding planner, agence SEO). Phasage 4 phases acquis (récit → acquittement → technique adaptée → récap). Scaffold audité conforme architecturalement (skill v0.2 inclut fix Button cn(), Astro latest, import z d'astro/zod). Frictions résiduelles : reformulation Phase 3 *"L'ensemble sera ré-ouvert pour validation finale"* non re-testée ; Directus default arbitraire (BACKLOG ouvert).
+- **`/audit-site-vitrine`** v0.1 — non testé en condition réelle. Mêmes patterns archi que bootstrap, mais grille A-J inédite à éprouver.
+- **`/bootstrap-app-desktop`** v0.1 — **prochaine cible de calibration**. Non testé. Risques attendus : mêmes patterns que site-vitrine (bundling Q1+QCM, récap prématuré, Button.tsx inliné à épurer probablement comme on a fait pour site-vitrine).
+- **`/audit-app-desktop`** v0.1 — non testé.
+- **`/bootstrap-cloud`** v0.1 ébauche — non testé. Bloqué partiellement par SSOT manquantes (`go.md`, `contracts.md`).
+- **`/audit-cloud`** v0.1 ébauche — non testé.
+
+**Méthode validée** : un cycle de calibration = (1) lancer bootstrap dans dossier vide, (2) noter les frictions sans intervenir, (3) audit "à plat" du scaffold via agent Explore avec SSOT en briefing, (4) corrections groupées dans un commit + push + `./install.sh`, (5) marquer v0.x en BACKLOG. **L'audit du scaffold via le skill `/audit-*` jumeau est biaisé (self-validation) — toujours auditer à plat.**
+
+**Principes de design méta acquis** (cf. `RATIONALE.md`) :
+- §9bis — Préférer reformulation à ajout d'instruction (économie d'attention).
+- §9ter — Paradoxe d'opposabilité : règle méta = emplacement garanti chargé (SKILL invoqué, pas seulement philosophy).
+- §11 — Bundle vs séparé : 2-dir model gardé, sélectivité à confirmer en usage.
+- §12 — Dilution d'attention en long contexte : problème ouvert, observation qualitative en cours.
+
+**Posture skills** : opinionés sur le framework par défaut, hard rule INVARIANT bloquante (philosophy §1), phasage strict métier→technique (philosophy §8), pas de docs framework par framework (les opinions vivent dans les skills), bascule honnête hors scope (refus annoncé si métier dépasse).
+
+---
+
 ## Corrections immédiates
 
 - [x] **Artefact "namespace" dans le titre §2 du `typescript.md`** — renommé en `type + helpers + Zod SSOT` (2026-05-15).
