@@ -13,8 +13,7 @@ Si le projet est vide → propose `/bootstrap-site-vitrine`. Si c'est un SaaS (a
 
 - `~/.code-conform/docs/architecture/00-philosophy.md` — invariants, mode audit (§8), filtre fondamental.
 - `~/.code-conform/docs/architecture/typescript.md` — strict TS, conventions naming.
-- `~/.code-conform/docs/architecture/ui.md` — atomic, tokens, a11y, smells.
-- `~/.code-conform/skills/audit-design-system/SKILL.md` — grille DS réutilisable.
+- `~/.code-conform/docs/architecture/atomic-design.md` — atomic, tokens structure, a11y, smells. Couvre l'archi UI ; pas la dimension design pure (brand, ambiance).
 - `docs/conventions.md` du projet si présent.
 
 ## Étape 1 — Cartographie
@@ -27,7 +26,7 @@ Inspecter sans modifier :
 - **Linter** : Biome (default code-conform) ou ESLint+Prettier ?
 - **i18n** : intégration native Astro (`i18n` config) ou lib externe (i18next) ? Si externe sans besoin réel → écart.
 - **CMS** : `@directus/sdk` ? Autre ? Aucun (statique pur) ?
-- **DS** : appliquer la grille `audit-design-system` sur `src/components/` (sous-audit).
+- **DS** : appliquer la grille DS de `atomic-design.md` (§3 atomic, §4 tokens, §5 composants, §11 a11y, §13 smells) sur `src/components/`.
 - **Pages** : `src/pages/` — combien, routing par fichier, présence `[...lang]` ou `[lang]` pour i18n.
 - **Layouts** : `src/layouts/` (Astro idiomatique). Si layouts dans `src/components/templates/` → écart.
 - **Islands** : compter les `.tsx` consommés depuis `.astro` et leurs directives `client:*`. Repérer hydratation excessive.
@@ -56,7 +55,7 @@ Annonce la carte en 5-8 lignes.
 - [ ] Pas de `client:load` sur tout — signaler chaque cas.
 - [ ] Hydration JS shipped < 50KB sur page d'accueil idéalement (sans audit Lighthouse formel, repérer les imports lourds).
 
-### C — DS atomic (renvoi `audit-design-system` §A-H)
+### C — DS atomic (depuis `atomic-design.md`)
 
 Appliquer la grille DS complète sur `src/components/`. Ajout spécifique site vitrine :
 
@@ -93,7 +92,7 @@ Appliquer la grille DS complète sur `src/components/`. Ajout spécifique site v
 - [ ] Pas de double validation (philosophy §5 INVARIANT).
 - [ ] react-hook-form + Sonner si formulaires complexes ; minimal sinon.
 - [ ] Anti-spam basique (honeypot, rate-limit côté serveur) — signaler absence.
-- [ ] Accessibilité : `<label htmlFor>`, messages d'erreur reliés via `aria-describedby` (`ui.md` §11).
+- [ ] Accessibilité : `<label htmlFor>`, messages d'erreur reliés via `aria-describedby` (`atomic-design.md` §11).
 
 ### H — SEO et métadonnées
 
@@ -103,9 +102,9 @@ Appliquer la grille DS complète sur `src/components/`. Ajout spécifique site v
 - [ ] Sitemap généré, `robots.txt` cohérent.
 - [ ] Structured data (`Schema.org`) sur pages clés (organisation, article, événement, restaurant…) si pertinent.
 
-### I — Accessibilité (renvoi `ui.md` §11)
+### I — Accessibilité (renvoi `atomic-design.md` §11)
 
-Re-passer la checklist a11y de `ui.md`. Spécifique vitrine :
+Re-passer la checklist a11y de `atomic-design.md`. Spécifique vitrine :
 
 - [ ] Hiérarchie heading correcte par page (`<h1>` unique, structure logique).
 - [ ] Images : `alt` non vide, ou `alt=""` explicite pour décoratif.
@@ -150,7 +149,7 @@ Lots typiques pour un site vitrine :
 1. **Migration Astro v<n> → v5** si applicable.
 2. **Dégradation hydratation** : convertir `client:load` superflus en `client:visible` ou `client:idle`. Convertir composants `.tsx` non interactifs en `.astro`.
 3. **Tailwind v3 → v4** si applicable (cf. lot DS audit).
-4. **DS** : appliquer les corrections via `/audit-design-system` (le skill peut être chaîné).
+4. **DS archi** : corrections issues de l'axe C (atomic, tokens structure, variants, a11y) — traiter par lots si volumineux.
 5. **i18n** : remplacer i18next par Astro natif si signal absent ; cohérence des URL/sitemap.
 6. **Formulaires** : factoriser validation Zod, brancher Sonner, ajouter anti-spam minimal.
 7. **SEO** : compléter meta, canonical, sitemap, structured data.
@@ -171,6 +170,6 @@ Pour chaque lot : lister fichiers concernés, montrer diff représentatif, deman
 ## Out of scope (renvoi)
 
 - **Projet sans Astro** (CRA, Vite SPA pure) → demander la raison ; si signal absent, proposer rebootstrap via `/bootstrap-site-vitrine`.
-- **DS isolé** → `/audit-design-system`.
+- **Direction artistique / brand design** (palette identitaire, typo character, ambiance) → `/design-system` (à venir).
 - **App interactive permanente** → `/audit-saas`.
 - **Performance fine** (Core Web Vitals, Lighthouse score) → hors scope conventions ; signal utilisateur requis.

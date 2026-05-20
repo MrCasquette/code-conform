@@ -18,8 +18,8 @@ Si c'est un site vitrine sans backend custom → `/bootstrap-site-vitrine`.
 - `~/.code-conform/docs/architecture/00-philosophy.md` — invariants, posture interactive (§1, §8), filtre fondamental (§4).
 - `~/.code-conform/docs/architecture/typescript.md` — si JS/TS dans le système.
 - `~/.code-conform/docs/architecture/rust.md` — si Rust dans le système.
-- `~/.code-conform/docs/architecture/ui.md` — si client web et/ou desktop.
-- Skills compagnons (chaînables après ébauche) : `/init-design-system`, `/bootstrap-app-desktop` (sous-bootstrap si couche desktop active).
+- `~/.code-conform/docs/architecture/atomic-design.md` — si client web et/ou desktop.
+- Skills compagnons (chaînables après ébauche) : `/bootstrap-app-desktop` (sous-bootstrap si couche desktop active). Direction artistique : `/design-system` (à venir).
 
 ## Philosophie du skill
 
@@ -191,7 +191,7 @@ Arborescence générée (les sections sans couche active sont omises) :
 
 ## Out of scope (renvoi)
 
-- **DS détaillé sur la couche web** → chaîner `/init-design-system` après bootstrap web.
+- **Direction artistique / brand design** sur les couches client → `/design-system` (à venir) à invoquer quand brand mûr.
 - **CI/CD pipeline** → hors v0.1. À ajouter en itération (GitHub Actions, Forgejo Runner pour selfhost).
 - **Observabilité fine** (tracing distribué, métriques Prometheus) → signal réel requis, hors default.
 - **Multi-tenancy** → hors v0.1, à acter explicitement dans `conventions.md` si besoin émerge.

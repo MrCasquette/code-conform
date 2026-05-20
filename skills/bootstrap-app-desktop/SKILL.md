@@ -15,8 +15,7 @@ Si l'app a un serveur distant compagnon → c'est un projet **cloud** (`/bootstr
 - `~/.code-conform/docs/architecture/00-philosophy.md` — invariants, posture interactive (§1, §8).
 - `~/.code-conform/docs/architecture/typescript.md` — frontière Zod, idiomes TS.
 - `~/.code-conform/docs/architecture/rust.md` — côté `src-tauri/`.
-- `~/.code-conform/docs/architecture/ui.md` — atomic, tokens, a11y.
-- `~/.code-conform/skills/init-design-system/SKILL.md` — générer le DS après squelette.
+- `~/.code-conform/docs/architecture/atomic-design.md` — atomic, tokens structure, a11y. **Couche archi UI uniquement** — la dimension design pure (brand, palette, typographie character) est hors scope ce skill, voir `/design-system` à venir.
 
 ## Default opinioné (avec justification)
 
@@ -24,7 +23,7 @@ Si l'app a un serveur distant compagnon → c'est un projet **cloud** (`/bootstr
 |---|---|---|
 | Runtime | Tauri 2.x | Binaire natif léger, sécurité par défaut (allowlist), updater intégré |
 | Frontend | React 19 + Vite | `ref` standard prop, écosystème mature, cohérent avec ref UI tool Tauri |
-| Styling | Tailwind v4 via `@tailwindcss/vite` | SSOT `ui.md` |
+| Styling | Tailwind v4 via `@tailwindcss/vite` | SSOT `atomic-design.md` |
 | State | Zustand | Suffit en mono-window, pas de routing global |
 | Persistance locale | `tauri-plugin-store` (JSON) ou `tauri-plugin-sql` (SQLite) | Selon besoin Q3 |
 | Linter | Biome | SSOT code-conform |
@@ -127,11 +126,107 @@ Arborescence générée :
 3. Installer Tailwind v4 + plugin Vite (`@tailwindcss/vite`), `@import "tailwindcss";` dans `src/styles/app.css`, `@theme` selon posture choisie.
 4. Créer `src/utils/index.ts` avec helper `cn`.
 5. Créer `src/lib/tauri.ts` — wrapper `invokeTyped<T>(cmd, payload, schema)` qui parse via Zod la réponse (frontière philosophy §5).
-6. Squelette atomic vide + 1 `Button` de référence en `Record<Variant>` (cf. `init-design-system`).
+6. Squelette atomic vide + 1 `Button` de référence en `Record<Variant>` (cf. `atomic-design.md` §5 et §8 pour le pattern complet).
 7. Configurer `tauri.conf.json` : allowlist **minimal au strict besoin** Q3-Q4 (jamais `"all": true`), CSP par défaut active.
 8. Si SQLite : ajouter `tauri-plugin-sql`, créer `src-tauri/migrations/0001_init.sql`, configurer dans `lib.rs`.
 9. Si updater Q6 : ajouter `tauri-plugin-updater`, doc minimal dans `docs/conventions.md` (endpoint, signing).
 10. README minimal : `pnpm tauri dev` / `pnpm tauri build`, prérequis Rust toolchain.
+
+### Recettes DS de base (inline, baseline architectural)
+
+Le skill pose un baseline neutre. La direction artistique (palette définitive, typographie character) relève de `/design-system` à invoquer plus tard quand brand mûr.
+
+**Helper `cn`** — `src/utils/index.ts` :
+
+```ts
+import clsx, { type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs))
+}
+```
+
+**`@theme` Tailwind v4** — `src/styles/app.css` :
+
+```css
+@import "tailwindcss";
+
+@theme {
+  --color-bg:        oklch(0.21 0.02 272);
+  --color-surface:   oklch(0.255 0.022 272);
+  --color-surface-2: oklch(0.3 0.025 272);
+
+  --color-fg:   oklch(0.97 0.01 272);
+  --color-fg-2: oklch(0.82 0.012 272);
+  --color-fg-3: oklch(0.62 0.015 272);
+
+  --color-rule:   oklch(0.32 0.02 272);
+  --color-rule-2: oklch(0.4 0.022 272);
+
+  --color-primary:      oklch(0.56 0.08 273);
+  --color-primary-deep: oklch(0.42 0.10 273);
+
+  /* Statuts toujours sémantiques (cf. atomic-design.md §4) */
+  --color-error:   oklch(0.65 0.16 20);
+  --color-success: oklch(0.78 0.18 156);
+  --color-warning: oklch(0.78 0.14 60);
+
+  --radius-md: 9px;
+}
+```
+
+**Button de référence** — `src/components/atoms/Button.tsx` :
+
+```tsx
+import { cn } from '@/utils'
+
+export type ButtonVariant = 'primary' | 'ghost' | 'destructive'
+export type ButtonSize = 'sm' | 'md' | 'lg'
+
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: ButtonVariant
+  size?: ButtonSize
+  isLoading?: boolean
+}
+
+const BASE =
+  'inline-flex items-center justify-center gap-2 font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+
+const VARIANT: Record<ButtonVariant, string> = {
+  primary: 'bg-primary text-white hover:bg-primary-deep',
+  ghost: 'bg-surface text-fg-2 border border-rule hover:border-rule-2',
+  destructive: 'bg-transparent text-error border border-error/40 hover:bg-error/10',
+}
+
+const SIZE: Record<ButtonSize, string> = {
+  sm: 'h-8 px-3 text-sm rounded-md',
+  md: 'h-10 px-4 text-base rounded-md',
+  lg: 'h-12 px-6 text-lg rounded-md',
+}
+
+export function Button({
+  variant = 'primary',
+  size = 'md',
+  isLoading,
+  className,
+  children,
+  ...rest
+}: ButtonProps) {
+  return (
+    <button
+      type="button"
+      disabled={isLoading || rest.disabled}
+      className={cn(BASE, VARIANT[variant], SIZE[size], className)}
+      {...rest}
+    >
+      {children}
+    </button>
+  )
+}
+```
+
+→ Pour Vue 3 / Svelte 5 : appliquer la même structure (variants en `Record`, base + variant + size composés via cn) — voir `atomic-design.md` §5 pour les équivalents par framework.
 
 ## Étape 4 — Capture dans `docs/conventions.md`
 
@@ -164,7 +259,7 @@ Lancer `pnpm tauri dev`. Vérifier :
 
 ## Out of scope (renvoi)
 
-- **DS détaillé** → chaîner `/init-design-system` après le squelette.
+- **Direction artistique / brand design** (palette identitaire, typographie character, ambiance) → `/design-system` (à venir) — quand brand mûr.
 - **App + serveur compagnon** → c'est `/bootstrap-cloud` (le desktop devient une couche du système).
 - **Mobile via Tauri Mobile** → mention dans `docs/conventions.md`, mais non couvert v0.1 (beta encore en évolution).
 - **CI / release pipeline** → hors v0.1. tauri-action GitHub à ajouter manuellement quand pertinent.

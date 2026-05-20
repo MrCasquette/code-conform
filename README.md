@@ -47,7 +47,7 @@ code-conform/
 │   │   ├── 00-philosophy.md       ← invariants racines, agnostique langage
 │   │   ├── typescript.md          ← idiomes TS
 │   │   ├── rust.md                ← idiomes Rust
-│   │   └── ui.md                  ← atomic design, tokens, conventions composants
+│   │   └── atomic-design.md       ← archi UI : atomic design, tokens structure, composants, a11y
 │   └── meta/                      ← règles de production/calibration de la SSOT
 └── skills/
     ├── bootstrap-site-vitrine/    ← Astro 5 + React 19 + Tailwind v4
@@ -55,10 +55,10 @@ code-conform/
     ├── bootstrap-app-desktop/     ← Tauri 2 + Vite + React 19
     ├── audit-app-desktop/
     ├── bootstrap-cloud/           ← projet multi-couches selfhostable (v0.1 ébauche)
-    ├── audit-cloud/
-    ├── init-design-system/        ← bootstrap DS in-app
-    └── audit-design-system/
+    └── audit-cloud/
 ```
+
+> **À venir** : skill `/design-system` (direction artistique, brand, palette identitaire, typo character) + doc compagnon `brand-design.md`. Le scope actuel des bootstrap/audit reste **strictement architectural** côté UI — le design pur est délégué.
 
 ---
 
@@ -94,7 +94,7 @@ git pull           # ou édits locaux
 Pas besoin de `--force` pour les updates normales — la sentinelle détecte que c'est notre install et écrase proprement.
 
 **Ce que le script touche / ne touche pas** :
-- Le script itère **uniquement** sur les skills présents dans le repo (`audit-*`, `bootstrap-*`, `init-design-system`). Tes autres skills dans `~/.claude/skills/` portent d'autres noms et ne sont **jamais inspectés ni modifiés**.
+- Le script itère **uniquement** sur les skills présents dans le repo (`audit-*`, `bootstrap-*`). Tes autres skills dans `~/.claude/skills/` portent d'autres noms et ne sont **jamais inspectés ni modifiés**.
 - Seul cas où un dossier tiers serait sauvegardé : si tu as par hasard un skill à toi qui porte exactement le même nom qu'un des nôtres (collision de nom). Sans la sentinelle, il serait alors préservé en `.bak.<timestamp>` avant qu'on pose le nôtre. Très peu probable en pratique, mais explicite.
 
 ### Modes alternatifs
@@ -129,7 +129,6 @@ Dans une session Claude Code ouverte dans un dossier vide :
 /bootstrap-site-vitrine     # Astro 5, multi-pages, peu de JS
 /bootstrap-app-desktop      # Tauri 2 + Vite + React 19
 /bootstrap-cloud            # projet multi-couches selfhostable (v0.1 ébauche)
-/init-design-system         # pose un DS atomic dans un projet (nouveau ou existant)
 ```
 
 Le skill pose des questions de cadrage (métier, contraintes), charge la SSOT pertinente, génère un squelette conforme et capture les décisions dans `docs/conventions.md` à la racine du projet généré.
@@ -142,7 +141,6 @@ Dans une session Claude Code ouverte dans le projet à auditer :
 /audit-site-vitrine
 /audit-app-desktop
 /audit-cloud
-/audit-design-system
 ```
 
 Le skill cartographie le projet, applique la grille d'audit, restitue un rapport structuré (écarts majeurs / mineurs / conforme), puis propose des corrections **par lot avec validation utilisateur**. INVARIANT : aucune modification de fichier sans accord explicite.

@@ -16,8 +16,7 @@ Si le projet est vide → `/bootstrap-cloud`.
 
 - `~/.code-conform/docs/architecture/00-philosophy.md` — mode audit (§8), invariants.
 - `~/.code-conform/docs/architecture/typescript.md`, `rust.md` — selon couches détectées.
-- `~/.code-conform/docs/architecture/ui.md` — pour couches client.
-- `~/.code-conform/skills/audit-design-system/SKILL.md` — DS sur clients web/desktop.
+- `~/.code-conform/docs/architecture/atomic-design.md` — pour couches client (archi UI ; pas la dimension design pure).
 - `~/.code-conform/skills/audit-site-vitrine/SKILL.md`, `audit-app-desktop/SKILL.md` — sous-audits par couche.
 - `docs/conventions.md` du projet si présent.
 
@@ -184,7 +183,7 @@ Ordre de lots **important** (inter-couches d'abord, puis par couche) :
 3. **Migrations versionnées** — si à la main, poser un système (sqlc, Atlas, Prisma migrate, sqlx-migrate selon langage serveur).
 4. **Secrets / `.env`** — sortir tout secret en dur, créer `.env.example` propre.
 5. **Topologie / monorepo** — réorganisation si couches mélangées dans un même dossier.
-6. **Sous-audit DS** — chaîner `/audit-design-system` sur `web/components/`.
+6. **Sous-audit DS** — appliquer la grille DS depuis `atomic-design.md` sur `web/components/` (ou équivalent par couche).
 7. **Sous-audit web / desktop** — chaîner les skills par couche.
 8. **DX `Makefile`** — poser cibles standard.
 9. **`docs/conventions.md`** — créer ou compléter.
@@ -204,7 +203,7 @@ Pour chaque lot : fichiers concernés, diff représentatif, accord, application,
 
 ## Out of scope (renvoi)
 
-- **DS isolé** → `/audit-design-system`.
+- **Direction artistique / brand design** sur les couches client → `/design-system` (à venir).
 - **Couche web isolée** → `/audit-site-vitrine` ou `/audit-saas`.
 - **Couche desktop isolée** → `/audit-app-desktop`.
 - **CI/CD pipeline** → sujet propre.

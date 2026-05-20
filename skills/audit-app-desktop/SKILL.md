@@ -16,8 +16,7 @@ Si c'est un SPA web sans `src-tauri/` → `/audit-site-vitrine` ou `/audit-saas`
 - `~/.code-conform/docs/architecture/00-philosophy.md` — mode audit (§8), filtre fondamental.
 - `~/.code-conform/docs/architecture/typescript.md` — frontière, idiomes TS.
 - `~/.code-conform/docs/architecture/rust.md` — côté `src-tauri/`.
-- `~/.code-conform/docs/architecture/ui.md` — atomic, tokens, a11y.
-- `~/.code-conform/skills/audit-design-system/SKILL.md` — grille DS réutilisable.
+- `~/.code-conform/docs/architecture/atomic-design.md` — atomic, tokens structure, a11y, smells. Couvre l'archi UI ; pas la dimension design pure (brand, ambiance).
 - `docs/conventions.md` du projet si présent.
 
 ## Étape 1 — Cartographie
@@ -30,7 +29,7 @@ Inspecter sans modifier :
 - **Commands Rust** : `src-tauri/src/commands/` ou équivalent — combien, groupées par domaine ou en vrac.
 - **Persistance** : plugin `tauri-plugin-store` / `tauri-plugin-sql` / FS direct / aucun.
 - **State** : Zustand, Redux, Pinia, autre.
-- **DS** : `src/components/` — appliquer grille `audit-design-system` (sous-audit).
+- **DS** : `src/components/` — appliquer la grille DS depuis `atomic-design.md` (§3 atomic, §4 tokens, §5 composants, §11 a11y, §13 smells).
 - **Fenêtrage** : `tauri.conf.json > app.windows` — mono ou multi.
 - **Updater** : `tauri-plugin-updater` présent ? Endpoint configuré ?
 - **`docs/conventions.md`** : présent ? Aligné ?
@@ -62,7 +61,7 @@ Annonce la carte en 5-8 lignes.
 - [ ] Wrapper `invoke` centralisé (`src/lib/tauri.ts`) — pas d'`invoke` éparpillé sans frontière.
 - [ ] Erreurs Rust remontées proprement (`Result<T, AppError>` sérialisable, pas `String` opaque).
 
-### D — Frontend / DS (renvoi `audit-design-system`)
+### D — Frontend / DS (depuis `atomic-design.md`)
 
 Appliquer la grille DS complète. Spécificités desktop :
 
@@ -96,7 +95,7 @@ Audit allégé côté `src-tauri/` :
 - [ ] Updater configuré si Q6 oui : endpoint privé/public, pubkey signature présente.
 - [ ] Code signing : signaler absent si distribution publique macOS/Windows (sinon Gatekeeper / SmartScreen bloquent).
 
-### H — Accessibilité desktop (renvoi `ui.md` §11)
+### H — Accessibilité desktop (renvoi `atomic-design.md` §11)
 
 - [ ] Navigation clavier complète (Tab/Shift+Tab, Enter, Escape).
 - [ ] Focus visible (pas de `outline: none` non remplacé).
@@ -152,7 +151,7 @@ Lots typiques (sécurité prioritaire) :
 1. **Réduire allowlist Tauri** au strict nécessaire — premier lot car impact direct sécurité.
 2. **CSP** : retirer `unsafe-inline`/`unsafe-eval` ou capter le signal dans `conventions.md`.
 3. **Frontière IPC** : introduire `src/lib/tauri.ts` wrapper, parser Zod en sortie, remplacer `as T`.
-4. **DS** : chaîner `/audit-design-system` pour le détail.
+4. **DS archi** : corrections issues de l'axe D (atomic, tokens structure, variants, a11y) — par lots si volumineux.
 5. **Migration Tauri v1 → v2** si applicable (gros lot, planifier).
 6. **Persistance** : aligner choix vs besoin si mismatch (ex: JSON store qui dépasse → migrer vers SQLite).
 7. **Updater + code signing** si distribution publique.
@@ -171,7 +170,7 @@ Pour chaque lot : fichiers, diff, accord, application.
 
 ## Out of scope (renvoi)
 
-- **DS isolé** → `/audit-design-system`.
+- **Direction artistique / brand design** (palette identitaire, typo character, ambiance) → `/design-system` (à venir).
 - **App + serveur compagnon** → `/audit-cloud`.
 - **Web SPA pure sans `src-tauri/`** → `/audit-site-vitrine` ou `/audit-saas`.
 - **CI/CD release pipeline** → hors scope conventions, sujet propre.

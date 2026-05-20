@@ -6,7 +6,7 @@
 
 ## 1. Préambule
 
-**Statut** : ce doc n'est pas un doc langage à proprement parler — il décrit une **dérivée fonctionnelle** transverse, cible privilégiée du skill `/init-design-system`. Il suit le squelette d'un doc langage (cf. `docs/meta/language.md`) avec adaptations : axes propres au domaine UI substitués aux axes inadaptés.
+**Statut** : ce doc n'est pas un doc langage à proprement parler — il décrit une **dérivée fonctionnelle** transverse couvrant l'architecture UI (atomic, tokens structure, composants, variants, a11y, frontières). Il suit le squelette d'un doc langage (cf. `docs/meta/language.md`) avec adaptations : axes propres au domaine UI substitués aux axes inadaptés. La dimension *design pure* (brand, character, palette identitaire, typographie) vit dans un futur doc compagnon `brand-design.md` chargé par le skill `/design-system` (à venir).
 
 **Vocation** : poser les invariants et defaults de l'UI quel que soit le framework — la traduction par framework reste dans les skills de bootstrap (`/bootstrap-site-vitrine`, `/bootstrap-app-desktop`…) et le doc langage chargé.
 
