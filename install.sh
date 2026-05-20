@@ -170,7 +170,9 @@ prune_orphan_skills() {
       found=1
     fi
   done
-  [[ $found -eq 1 ]] && echo ""
+  if [[ $found -eq 1 ]]; then
+    echo ""
+  fi
 }
 
 case "$mode" in
