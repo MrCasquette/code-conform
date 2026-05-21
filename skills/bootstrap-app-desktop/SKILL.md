@@ -60,7 +60,7 @@ Inspecter le dossier cible :
 
 Le cadrage se déroule en **4 phases internes** à cette étape, avant l'Étape 3 (génération). **Phasage strict** (philosophy §8 INVARIANT) : récit → acquittement → technique adaptée → récap. Pas de bundle, pas de récap prématuré. Capture chaque décision dans `docs/conventions.md` au fil de l'eau.
 
-**Hard rule (philosophy §1 INVARIANT bloquant)** : aucune génération de fichier tant qu'une phase n'est pas validée. Pas de *"je scaffold, tu me diras après"* — violation, pas initiative.
+**Hard rule (philosophy §1 INVARIANT bloquant)** : aucune génération de fichier tant qu'une phase n'est pas validée. Pas de *"je scaffold, tu me diras après"* — violation, pas initiative. Si l'utilisateur veut "passer", ré-énonce le blocage.
 
 ### Phase 1 — Récit du projet (texte libre, bloquante)
 
@@ -344,7 +344,12 @@ Lancer `pnpm tauri dev`. Vérifier :
 
 ## Out of scope (renvoi)
 
+- **Site vitrine éditorial** (présentation, restaurant, association — peu de JS, contenu majoritairement statique) → `/bootstrap-site-vitrine`.
+- **App SaaS B2B** (multi-tenant, abonnements, dashboards distants, billing récurrent) → `/bootstrap-saas` (à venir).
+- **E-commerce** (catalogue, panier, checkout, paiement one-shot) → `/bootstrap-ecommerce` (à venir).
+- **App desktop pilotée par un serveur compagnon que tu dois aussi construire** → `/bootstrap-cloud` (le desktop devient une couche du système).
+- **Audit d'une app desktop existante** → `/audit-app-desktop`.
 - **Direction artistique / brand design** (palette identitaire, typographie character, ambiance) → `/design-system` (à venir) — quand brand mûr.
-- **App + serveur compagnon** → c'est `/bootstrap-cloud` (le desktop devient une couche du système).
-- **Mobile via Tauri Mobile** → mention dans `docs/conventions.md`, mais non couvert v0.1 (beta encore en évolution).
+- **CLI** → `/bootstrap-cli`.
+- **Mobile via Tauri Mobile** → mention dans `docs/conventions.md`, non couvert v0.1 (beta encore en évolution).
 - **CI / release pipeline** → hors v0.1. tauri-action GitHub à ajouter manuellement quand pertinent.

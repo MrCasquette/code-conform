@@ -61,7 +61,7 @@ Annoncer une phrase de cadrage : *"Je vais créer un site vitrine Astro (latest)
 
 Le cadrage se déroule en **4 phases internes** à cette étape, avant l'Étape 3 (génération). Posture interactive (philosophy §1 et §8 INVARIANT). **Phasage strict** : récit → acquittement → technique adaptée → récap. Pas de bundle, pas de récap prématuré.
 
-**Hard rule (philosophy §1 INVARIANT bloquant)** : aucune génération de fichier tant qu'une phase n'est pas validée. Si l'utilisateur veut "passer", ré-énonce et signale que ça bloque.
+**Hard rule (philosophy §1 INVARIANT bloquant)** : aucune génération de fichier tant qu'une phase n'est pas validée. Pas de *"je scaffold, tu me diras après"* — violation, pas initiative. Si l'utilisateur veut "passer", ré-énonce le blocage.
 
 ### Phase 1 — Récit du projet (texte libre, bloquante)
 
