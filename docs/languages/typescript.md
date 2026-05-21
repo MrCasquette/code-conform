@@ -213,7 +213,7 @@ Sémantique stricte, indépendante du choix d'organisation ci-dessus :
 - `find*` → `T | null` ou `T | undefined`. La recherche peut échouer, retour nullable explicite. Le consommateur **doit** gérer le cas absent.
 - `get*` → `T`. Throw si absent — pour invariants stricts (l'absence est un bug, pas un cas attendu). Rare en repository, fréquent côté config/registry.
 - `list*` ou `findAll*` → `T[]`. Collection, peut être vide (`[]`), jamais `null`.
-- `create`, `update`, `delete`, `upsert` → mutations CRUD. Retournent typiquement l'entité affectée ou `void` selon contexte.
+- `create`, `update`, `delete`, `upsert` → mutations CRUD. Retournent l'entité affectée (ou `void` selon contexte). **Throw en cas d'échec — jamais nullable.** Une mutation soit réussit et retourne `T`, soit échoue et throw ; `T | null` n'a pas de sens sémantique pour une mutation. L'erreur remonte à la frontière (endpoint, action server) qui catch et traduit en réponse appropriée (cf. `philosophy §5`).
 - `count*` → `number`.
 
 Cette distinction `find` vs `get` est précieuse : `findById(id)` te force à gérer le `null`, `getById(id)` exprime une garantie d'existence. **Pas de mélange dans un même module** — un repository qui mélange `findUser` qui throw et `getOrder` qui retourne null est un bug en germe (les conventions de retour deviennent imprédictibles).
