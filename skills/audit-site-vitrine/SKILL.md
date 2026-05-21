@@ -9,12 +9,36 @@ Skill **audit** : revue d'un site vitrine déjà déployé ou en cours. Diagnost
 
 Si le projet est vide → propose `/bootstrap-site-vitrine`. Si c'est un SaaS (auth, dashboard, multi-pages dynamiques) → renvoi vers `/audit-saas`. Si c'est une CLI ou desktop → renvoi correspondant.
 
+## Posture (lire avant tout)
+
+L'audit mesure la **conformité aux conventions code-conform** — pas tous les bugs ou imperfections détectables. La distinction est structurante :
+
+- **Dans la SSOT** (philosophy, atomic-design, typescript) → écart au référentiel, organisé en **3 lots ordonnés par criticité architecturale** (recadrage fondations → refactors transverses → détails ponctuels).
+- **Hors SSOT** (sécurité applicative, RGPD, SEO structuré, bugs HTML ponctuels, perfs) → observations signalées dans une section dédiée, **jamais mélangées aux lots SSOT**.
+
+Le rapport n'est pas un menu à la carte. C'est un **plan d'attaque séquentiel** que l'utilisateur peut accepter, ajuster ou désactiver par lot — mais l'ordre est imposé par la dépendance architecturale (les détails ne se traitent pas avant les fondations).
+
+**Anti-pattern signature à éviter (test 1 agay 2026-05-21)** : produire un rapport "audit qualité de code générique" avec des références SSOT plaquées dessus (citations `philosophy §3` sans phrase-clé, écarts SSOT et bugs HTML au même niveau, 18 mineurs en vrac, pas de plan d'attaque). C'est un audit *amélioré*, pas un audit *code-conform*.
+
 ## Pré-requis — SSOT à charger
 
 - `~/.code-conform/docs/00-philosophy.md` — invariants, mode audit (§8), filtre fondamental.
 - `~/.code-conform/docs/languages/typescript.md` — strict TS, conventions naming.
 - `~/.code-conform/docs/design/atomic-design.md` — atomic, tokens structure, a11y, smells. Couvre l'archi UI ; pas la dimension design pure (brand, ambiance).
 - `docs/conventions.md` du projet si présent.
+
+## Hard rule — usage de la SSOT (INVARIANT)
+
+Quand tu juges un écart, tu **dois** consulter la section SSOT pertinente **au moment** où tu formules l'écart — pas en lecture inspirationnelle au démarrage. Charger les docs en début de session ≠ les avoir en mémoire au moment du rapport (dilution d'attention en long contexte, cf. `RATIONALE §12`). Le risque est **plus élevé** ici qu'en bootstrap : cartographie + grille A-J + rapport par lots = contexte long, dérive vers training data ("audit générique de qualité de code") au lieu de la SSOT.
+
+Concrètement :
+- **`Read` la section ciblée juste avant** de formuler l'écart (ex: `philosophy §3` pour une classe-acteur vs donnée pure, `atomic-design.md §13` pour un smell DS, `typescript.md §1` pour Zod aux frontières).
+- **Cite la phrase-clé ou le pattern exact** dans le rapport ("`philosophy §3` : *la classe est réservée à l'acteur avec état/deps*"), pas une reformulation de mémoire.
+
+Anti-patterns :
+- ✗ *"Je connais le pattern, j'applique"* → dérive vers audit générique.
+- ✗ Citer un numéro de section sans la phrase-clé (`philosophy §3` seul = référence floue, pas opposable).
+- ✗ Mélanger écarts SSOT et observations hors SSOT au même niveau → effet "massue indistincte" sur l'utilisateur.
 
 ## Étape 1 — Cartographie
 
@@ -120,6 +144,8 @@ Re-passer la checklist a11y de `atomic-design.md`. Spécifique vitrine :
 
 ## Étape 3 — Rapport
 
+Format **imposé**. Trois lots SSOT ordonnés + section hors-SSOT distincte. Pas de hiérarchie "majeurs/mineurs" indistincte.
+
 ```
 # Audit site vitrine — <projet>
 
@@ -128,35 +154,68 @@ Re-passer la checklist a11y de `atomic-design.md`. Spécifique vitrine :
 - Pages : N (dont M i18n localisées)
 - Islands : N (dont M client:load suspectes)
 - CMS : <Directus | statique | autre>
-- DS : <conforme | écarts mineurs | écarts majeurs>
+- DS : <conforme | écarts présents>
 
-## Écarts majeurs
-1. ...
-## Écarts mineurs
-1. ...
+## Lot 1 — Recadrage aux conventions code-conform (fondations)
+
+Écarts structurels. À traiter en premier car le reste s'appuie dessus.
+
+Catégories typiques :
+- Slicing / archi (`philosophy §6` — vertical par concept métier).
+- Formes citoyennes (`philosophy §3` — classe = acteur uniquement, pas wrapper donnée pure).
+- Frontière Zod unique (`philosophy §5` INVARIANT — pas de double validation).
+- Atomic structure (`atomic-design.md §3` — atoms/molecules/organisms cohérent).
+
+Pour chaque écart : fichier:ligne, **citation SSOT verbatim**, diagnostic en 1-2 phrases, proposition correctrice.
+
+## Lot 2 — Refactors transverses
+
+Écarts qui touchent N endroits. Coût élevé, souvent répétitif, mais mécanique une fois Lot 1 fait.
+
+Catégories typiques :
+- Tokens (`atomic-design.md §4` — toute couleur hors `@theme` = écart).
+- Hydratation islands (`.tsx` non interactif, `client:load` superflu).
+- Validation dupliquée hors frontière (`philosophy §5`).
+- Patterns variants non `Record<Variant>` répétés.
+
+## Lot 3 — Détails ponctuels
+
+Feuilles. Peu invasifs, isolés.
+
+Catégories typiques :
+- A11y (`atomic-design.md §11` — skip-link, `alt`, hiérarchie heading).
+- Conventions HTML (`type="button"`, attributs ARIA manquants).
+- Petits bugs ponctuels (`id` doublon, token mort isolé, texte non i18n résiduel).
+
+## Hors SSOT — observations applicatives
+
+**Pas un écart au référentiel.** Bonus de l'audit signalé en transparence — l'utilisateur arbitre indépendamment des lots SSOT.
+
+Catégories typiques : fuites RGPD / data exposure, CSP / security headers, Schema.org / structured data, rate-limit scalabilité, perfs / Core Web Vitals, bugs métier visibles.
+
 ## Conforme
-- <axes sans action>
-## Suggestions hors écart
-- ...
+
+Axes du projet qui respectent la SSOT — explicite, court (3-6 bullets).
 ```
 
-## Étape 4 — Correction interactive
+## Étape 4 — Plan d'attaque proposé
 
 **INVARIANT** — aucune modification sans accord explicite.
 
-Lots typiques pour un site vitrine :
+Le plan suit l'ordre du rapport (Lot 1 → Lot 2 → Lot 3 → Hors-SSOT optionnel). Dépendance architecturale : **les détails ne se traitent pas avant les fondations**. Pas de menu à la carte.
 
-1. **Migration Astro v<n> → v5** si applicable.
-2. **Dégradation hydratation** : convertir `client:load` superflus en `client:visible` ou `client:idle`. Convertir composants `.tsx` non interactifs en `.astro`.
-3. **Tailwind v3 → v4** si applicable (cf. lot DS audit).
-4. **DS archi** : corrections issues de l'axe C (atomic, tokens structure, variants, a11y) — traiter par lots si volumineux.
-5. **i18n** : remplacer i18next par Astro natif si signal absent ; cohérence des URL/sitemap.
-6. **Formulaires** : factoriser validation Zod, brancher Sonner, ajouter anti-spam minimal.
-7. **SEO** : compléter meta, canonical, sitemap, structured data.
-8. **a11y** : skip-link, hiérarchie heading, `alt`.
-9. **`docs/conventions.md`** : créer ou compléter.
+Format proposé à l'utilisateur :
 
-Pour chaque lot : lister fichiers concernés, montrer diff représentatif, demander accord, appliquer.
+> Voici le plan d'attaque proposé :
+>
+> **Lot 1 — Recadrage** (N écarts) : <liste résumée>. Impact large, refactor structurel. À faire en premier.
+> **Lot 2 — Refactors transverses** (N écarts) : <liste résumée>. À faire après Lot 1 (les refactors s'appuient sur la structure recadrée).
+> **Lot 3 — Détails** (N écarts) : <liste résumée>. À faire après Lot 2.
+> **Hors-SSOT** (N observations) : <liste résumée>. Optionnel, à arbitrer indépendamment — pas une convention code-conform.
+>
+> Tu peux : valider tel quel / désactiver un lot entier / sauter au Lot 2 ou 3 si tu sais que les précédents sont déjà faits ou non prioritaires / traiter Hors-SSOT à part. **Tu ne peux pas piocher en désordre dans un même lot** — un lot est cohérent par construction.
+
+Une fois le plan validé, exécuter lot par lot via `AskUserQuestion` (multi-select) sur les fichiers du lot courant. Pour chaque modification proposée : fichier, diff représentatif, accord, application. Compléter `docs/conventions.md` au fil de l'eau pour acter les choix de bascule (ex: DDD Booking assumé vs `philosophy §3` strict).
 
 ## Anti-patterns du skill
 
