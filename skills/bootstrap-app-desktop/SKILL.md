@@ -130,9 +130,30 @@ Format type :
 - **Fenêtrage** : Mono-window (default) / Multi-window (sur signal : tray, settings) / Tray-only.
 - **Distribution** : Plateformes cibles + updater on/off + code signing (différable).
 
+**Bascule honnête hors scope** : si le métier décrit dépasse une app desktop locale (serveur compagnon distant que l'app interroge, multi-utilisateurs synchronisés via backend, dimension web/mobile prioritaire, sessions/auth contre un service distant), **n'essaie pas d'adapter Tauri pour ça**. Annonce honnêtement : *"Ce que tu décris dépasse le scope `bootstrap-app-desktop`. Tu as besoin de <profil détecté>. Skill dédié : `/bootstrap-cloud` (desktop devient une couche du système) ou `/bootstrap-saas` (à venir). En attendant je ne génère rien."* Pas de *"je m'adapte"*, pas de *"je débrouille"*.
+
+Critère : *"app locale avec éventuelle synchro légère ou API tierce ponctuelle"* → reste desktop ; *"app pilotée par un serveur compagnon que je dois aussi construire"* → hors scope, bascule `/bootstrap-cloud`.
+
 ### Phase 4 — Récap puis validation
 
-**Pas de récap tant que Phase 3 incomplète.** Quand tout est répondu, présente la synthèse exhaustive et demande validation explicite avant Étape 3.
+**Pas de récap tant que Phase 3 incomplète.** Quand toutes les réponses techniques sont reçues, présente la synthèse exhaustive et **demande validation explicite** avant Étape 3.
+
+Format type :
+
+> Récap des décisions :
+> - Métier : <résumé en 1-2 lignes>
+> - Framework UI : <choix>
+> - Persistance : <choix + migrations si SQLite>
+> - IPC / Commands Rust : <choix + tauri-specta ou Zod>
+> - Fenêtrage : <choix>
+> - Plateformes cibles : <liste>
+> - Updater : <oui/non>
+> - Posture tokens : <A/B>
+> - Linter : <Biome/autre>
+>
+> Je procède au scaffold sur cette base ?
+
+Attends "oui / valide / go" explicite. Pas de procédure tacite.
 
 ### Anti-patterns du cadrage
 
