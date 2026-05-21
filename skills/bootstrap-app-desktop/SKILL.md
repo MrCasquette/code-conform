@@ -80,12 +80,9 @@ Aucune sous-question, aucun bullet, aucune liste d'exemples. La question doit re
 2. **Pour qui** — utilisateur final ; distingue commanditaire ≠ utilisateur si pertinent (sans relancer).
 3. **Ce que ça doit faire ou permettre** — l'intention concrète.
 
-**Grille d'écoute additionnelle** spécifique app desktop :
-- OS cibles si évoqués naturellement.
-- Manipulation de fichiers locaux / données utilisateur sensibles.
-- Mode d'usage : continu / ponctuel / arrière-plan / tray.
+**Grille d'écoute additionnelle** spécifique app desktop — rien de plus. Pas de KPI, pas de personas, pas de user stories, pas de critère de succès mesurable.
 
-**Au passage**, capte sans questionner : OS imposé, distribution attendue, références (apps existantes). Si absent, **reste absent — pas de relance**.
+**Au passage**, capte sans questionner : OS imposé, distribution attendue, manipulation de fichiers locaux ou données sensibles, mode d'usage (continu / ponctuel / tray), références (apps existantes). Si présent, retiens. Si absent, **reste absent — pas de relance sur ces axes**.
 
 **Hors scope ferme — ne pose JAMAIS ces questions en Phase 1** : budget, délais, planning de livraison.
 
