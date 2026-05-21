@@ -179,6 +179,47 @@ Critère : plusieurs fonctions cohérentes sur un thème, importées souvent ens
 
 **Anti-pattern** : `class CompressionService { static resolveParams() { ... } }`. Une class composée uniquement de méthodes statiques est un const object déguisé. Voir §11.
 
+### Modules de domaine — namespace au point d'import (default)
+
+Pour un concept domain (`Page`, `Booking`, `Block`), exporte les fonctions verbe seul côté module et consomme-les avec un namespace **au point d'import** :
+
+```ts
+// domain/booking/booking.repository.ts
+export async function findAll(): Promise<Booking[]> { ... }
+export async function findByRange(start: Date, end: Date): Promise<Booking[]> { ... }
+export async function create(input: BookingInput): Promise<Booking> { ... }
+
+// au consommateur
+import * as Booking from '@/domain/booking/booking.repository'
+const all = await Booking.findAll()
+const booking = await Booking.create({ ... })
+```
+
+Pourquoi cette forme :
+
+- **Forme native du langage** (cf. `philosophy §3`). Distinct d'une classe statique : pas de `this`, pas de `new`, tree-shaking préservé.
+- **Concept métier explicite au call site** (`Booking.create` vs `createBooking`). Cohérent avec slicing vertical par concept (cf. `philosophy §6`).
+- **Flexibilité** : le consommateur peut faire `import { findAll }` ponctuellement quand utile (par exemple pour un usage unique au sein d'un module qui consomme déjà 80% des fonctions d'un autre namespace).
+- **Pas de re-export technique** : pas de `export * as Booking from './booking.repository'` côté module — légal mais marginal, et empêche les imports sélectifs.
+
+**Default** : verbe seul exporté + `import * as Concept` côté consommateur.
+
+**Bascule possible** (à acter dans `docs/conventions.md` projet, cf. `philosophy §9`) : préfixe verbe + concept (`findHomePage`, `createBooking`) si tu exposes les modules comme **API publique consommée par LLMs ou code généré** (le consommateur n'a pas la connaissance de la structure namespace), ou si tu veux **grepabilité maximale** sur le concept (chaque appel contient le mot complet du concept).
+
+### Convention de verbes — repositories et helpers de persistance
+
+Sémantique stricte, indépendante du choix d'organisation ci-dessus :
+
+- `find*` → `T | null` ou `T | undefined`. La recherche peut échouer, retour nullable explicite. Le consommateur **doit** gérer le cas absent.
+- `get*` → `T`. Throw si absent — pour invariants stricts (l'absence est un bug, pas un cas attendu). Rare en repository, fréquent côté config/registry.
+- `list*` ou `findAll*` → `T[]`. Collection, peut être vide (`[]`), jamais `null`.
+- `create`, `update`, `delete`, `upsert` → mutations CRUD. Retournent typiquement l'entité affectée ou `void` selon contexte.
+- `count*` → `number`.
+
+Cette distinction `find` vs `get` est précieuse : `findById(id)` te force à gérer le `null`, `getById(id)` exprime une garantie d'existence. **Pas de mélange dans un même module** — un repository qui mélange `findUser` qui throw et `getOrder` qui retourne null est un bug en germe (les conventions de retour deviennent imprédictibles).
+
+Ne s'applique pas qu'aux repositories : tout helper qui interroge un état lointain (cache, store, API tierce) suit la même convention.
+
 **Distinguer fonction libre et helper de donnée pure** :
 
 - Une fonction qui **opère sur un type du domaine** comme premier argument va dans le const du type (`Image.toProcessing(img)`).
@@ -735,9 +776,15 @@ class PageRepository {
   static async findBySlug(slug: string) { ... }
   static async save(page: Page) { ... }
 }
-// ✓
-export async function findPageBySlug(slug: string) { ... }
-export async function savePage(page: Page) { ... }
+
+// ✓ — verbe seul exporté, namespace au point d'import (cf. §3)
+// page.repository.ts
+export async function findBySlug(slug: string): Promise<Page | null> { ... }
+export async function save(page: Page): Promise<Page> { ... }
+
+// au consommateur
+import * as Page from '@/domain/page/page.repository'
+const page = await Page.findBySlug(slug)
 ```
 
 **Singleton exporté en bas de fichier de class**

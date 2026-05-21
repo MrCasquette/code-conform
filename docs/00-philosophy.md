@@ -75,6 +75,8 @@ Toute unité de code dans un projet relève d'une de ces trois formes. Choisir l
 
 **Anti-pattern récurrent** : la class qui n'a ni état d'instance ni dépendance injectée — uniquement des méthodes statiques. C'est un namespace déguisé. Utilise la forme native (namespace, module de fonctions) du langage à la place.
 
+> **Précision par langage** : ce que veut dire *"forme native"* varie. En TS, c'est un module standard consommé avec un namespace **au point d'import** (`import * as Concept from './concept'`) — distinct d'une classe statique (pas de `this`, pas de `new`, tree-shaking préservé) et distinct d'un re-export `export * as Concept` côté définition (légal mais marginal). Détails et convention de nommage des fonctions : `languages/typescript.md` §3.
+
 ---
 
 ## 4. Le filtre fondamental
