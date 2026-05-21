@@ -4,13 +4,13 @@
 
 ---
 
-## État de calibration des skills (mis à jour 2026-05-20)
+## État de calibration des skills (mis à jour 2026-05-21)
 
 Synthèse opérationnelle pour reprise rapide en nouvelle session. Détail des décisions et frictions plus bas dans le doc, contexte de design dans `RATIONALE.md`.
 
 - **`/bootstrap-site-vitrine`** v0.2 — calibré 3 sessions réelles (restaurant, wedding planner, agence SEO). Phasage 4 phases acquis (récit → acquittement → technique adaptée → récap). Scaffold audité conforme architecturalement (skill v0.2 inclut fix Button cn(), Astro latest, import z d'astro/zod). Frictions résiduelles : reformulation Phase 3 *"L'ensemble sera ré-ouvert pour validation finale"* non re-testée ; Directus default arbitraire (BACKLOG ouvert).
 - **`/audit-site-vitrine`** v0.1 — non testé en condition réelle. Mêmes patterns archi que bootstrap, mais grille A-J inédite à éprouver.
-- **`/bootstrap-app-desktop`** v0.1 — **prochaine cible de calibration**. Non testé. Risques attendus : mêmes patterns que site-vitrine (bundling Q1+QCM, récap prématuré, Button.tsx inliné à épurer probablement comme on a fait pour site-vitrine).
+- **`/bootstrap-app-desktop`** v0.2 — **alignement interactif site-vitrine v0.2 porté préventivement** (2026-05-21), avant test 1, pour éviter de re-payer les frictions connues. Portages : hard rule §1 unifiée (résistance + auto-discipline), Phase 1 *"rien de plus"* + bloc "au passage" englobant + anti-pattern KPI/personas/user stories, Phase 3 bascule honnête hors scope (cas typiques desktop : serveur compagnon → `/bootstrap-cloud`, multi-utilisateurs distants → `/bootstrap-saas`), Phase 4 template récap explicite (9 bullets), Out of scope catalogue symétrique. Q1 "app desktop" gardée (différence assumée site-vitrine "site" — ici verrou techno acté par l'invocation du skill). Restent côté technique non éprouvé : Button.tsx inliné potentiellement à épurer vers `atomic-design.md` (comme fait site-vitrine), allowlist Tauri en pratique, IPC tauri-specta vs Zod parse. **Prochaine étape : test 1 en condition réelle, méthode standard.**
 - **`/audit-app-desktop`** v0.1 — non testé.
 - **`/bootstrap-cloud`** v0.1 ébauche — non testé. Bloqué partiellement par SSOT manquantes (`go.md`, `contracts.md`).
 - **`/audit-cloud`** v0.1 ébauche — non testé.
