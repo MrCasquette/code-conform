@@ -81,6 +81,15 @@ dbg_macro = "deny"
 
 **Convention module** : préférer `mon_module.rs` + dossier `mon_module/` à `mon_module/mod.rs`. Les deux compilent ; la première est l'idiome récent (post-Rust 2018).
 
+**Versioning et dépendances** (cf. `philosophy §11`) :
+
+- **Caret implicite** en Cargo (`x.y.z` est interprété comme `^x.y.z`) — default de l'écosystème, ne pas changer.
+- **`Cargo.lock` commité pour les binaires** (apps, services, CLIs, Tauri backend). Pour les libs publiées sur crates.io, conventionnellement **non commité** (le consommateur impose le sien) — à acter dans `docs/conventions.md` du projet selon le profil.
+- **CI** : `cargo build --locked` (et `cargo test --locked`). Le lock fait foi, build échoue si le manifeste a divergé sans `cargo update` local préalable.
+- **Upgrades manuels** : `cargo outdated` (binaire externe, installé via `cargo install cargo-outdated`) liste ce qui peut bouger. Puis `cargo update` ou `cargo update -p <crate>` pour cibler.
+- **`rust-toolchain.toml`** (ci-dessus) : verrouille la toolchain Rust elle-même (canal + composants) — complète le verrouillage des crates.
+- **`rust-version`** dans `[package]` : MSRV explicite — utile dès que le projet vise une compat minimale (libs, CI multi-versions). Pour une app solo récente sans contrainte, peut être omis (la toolchain règle déjà la version utilisée).
+
 ---
 
 ## 3. Forme de la donnée pure (concept du domaine)

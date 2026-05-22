@@ -68,6 +68,16 @@ Le `tsconfig` exact reste à adapter au framework cible (ajout `paths`, `jsx`, `
 
 L'autorisation des guards sur `unknown` peut être un cheval de Troie pour réintroduire `any` déguisé. Si tu hésites à valider une donnée, **parse-la** (cf. §5 frontières).
 
+**Versioning et dépendances** (cf. `philosophy §11`) :
+
+- **Caret par défaut** dans `package.json` (`^x.y.z`) — comportement npm/pnpm/Bun standard, ne pas changer.
+- **Lockfile commité** : `pnpm-lock.yaml` ou `bun.lockb` selon le PM.
+- **CI** : `pnpm install --frozen-lockfile` (ou `bun install --frozen-lockfile`). Le lock fait foi, jamais régénéré implicitement. Build échoue si le manifeste a divergé sans `pnpm install` local préalable — comportement voulu.
+- **Upgrades manuels uniquement** : `pnpm outdated` (liste sans rien faire) puis `pnpm update` (respecte les ranges) ou `pnpm update --latest` (ignore les ranges et passe aux majors disponibles). Pas de bot par défaut.
+- **`packageManager` field** (Corepack) : verrouiller la version exacte de pnpm/Bun pour éviter divergence local/CI — `"packageManager": "pnpm@9.x.y"`.
+- **`engines.node`** : pinner la major Node ciblée (ex: `"node": ">=22 <23"`) — utile pour signaler les incompatibilités au moment de l'install.
+- **Frontière `dependencies` / `devDependencies`** : runtime → `dependencies` ; build, lint, types, test runners, codegen → `devDependencies`. Pas de mélange. Une lib qui finit dans le bundle client appartient à `dependencies`.
+
 ---
 
 ## 2. Donnée pure : `type` + helpers + Zod SSOT

@@ -304,3 +304,19 @@ Cette section répond à une question que les sections précédentes ne tranchen
 - **Mix de langages dans un même projet** (cas cloud / monorepo) : chaque couche applique la règle indépendamment. Le mix est sain s'il découle de critères runtime distincts (serveur Go pour single-binary + web TS pour UI = légitime).
 
 **Ce que cette règle empêche** : démarrer un Nuxt en JS pur "pour aller plus vite", choisir un langage par goût personnel en l'absence de signal, contredire silencieusement la SSOT en se basant sur le template par défaut d'un outil. Ce qu'elle permet : un default explicite et défendable, des bascules justifiées et tracées.
+
+## 11. Versioning et reproductibilité — INVARIANT
+
+Trois règles transverses opposables à tout projet de la SSOT, indépendamment du langage. Les détails par écosystème sont dans les docs `languages/`.
+
+**1. Lockfile commité.** `pnpm-lock.yaml`, `bun.lockb`, `Cargo.lock` (binaire), `composer.lock`, `go.sum`. C'est le contrat de reproductibilité — sans lui, deux installations à deux dates ou deux machines ne donnent pas le même graphe de dépendances. *Exception* : libs Rust publiées sur crates.io où `Cargo.lock` est conventionnellement non commité (le consommateur impose le sien). À acter dans `docs/conventions.md` du projet si applicable.
+
+**2. Caret par défaut dans les manifestes.** `^x.y.z` (npm/Cargo) accepte les patches et minors compatibles SemVer. C'est le default des écosystèmes (npm/pnpm/Bun, Cargo) — **ne pas pinner exact par paranoïa**. L'exact (`x.y.z` strict) est réservé aux cas où une régression mineure est connue ou inacceptable, et doit être documenté dans `docs/conventions.md` du projet avec raison (incident, contrainte d'environnement).
+
+**3. CI installe en mode strict.** Le CI consomme le lockfile sans le modifier : `pnpm install --frozen-lockfile`, `bun install --frozen-lockfile`, `cargo build --locked`. Si le lock diverge du manifeste, le build échoue — **c'est exactement ce qu'on veut**, le lock n'est jamais "implicitement régénéré" en CI.
+
+**Upgrades volontaires uniquement.** Pas de bot de mise à jour automatique par défaut sur les projets *sustainable solo craft* — les majors arrivent sur signal de l'utilisateur, jamais par tirage de fond. Outils par écosystème (détails dans les docs langage) : `pnpm outdated` + `pnpm update [--latest]`, `cargo outdated` + `cargo update [-p <crate>]`. Renovate/Dependabot peuvent être activés sur signal acté dans `conventions.md` (cas typique : équipe + audit régulier des CVE).
+
+**Pourquoi INVARIANT** : sans lockfile + frozen install, un projet en production peut casser à n'importe quel deploy à cause d'une mise à jour transitive imprévue. C'est la même logique que la frontière de validation §5 — faire payer la rigueur en amont (commiter le lock, refuser les drifts implicites) pour ne pas la payer en aval, multipliée (debug une nuit parce que la prod a tiré un patch transitif d'une dépendance qu'on n'a même pas dans le manifeste direct).
+
+**Ce que cette règle empêche** : déploiements non-reproductibles, mises à jour silencieuses introduites par un `npm install` sans lock, casse fortuite en CI à cause d'un patch transitif. Ce qu'elle permet : un état du projet figé et auditable à tout instant, des upgrades intentionnels et tracés.
