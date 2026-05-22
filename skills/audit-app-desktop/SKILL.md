@@ -77,26 +77,35 @@ Annonce à l'utilisateur :
 
 2. **Délégation** via le mécanisme d'agent (sub-task / Explore agent selon contexte). Le sub-agent retourne ses findings sur cet axe **uniquement**.
 
-3. **Plan ciblé à l'utilisateur** : N écarts sur cet axe, **citation SSOT verbatim** par écart, proposition de correction.
+3. **Reporting honnête au plan ciblé** : remonter **intégralement** les findings du sub-agent — y compris points borderline, contradictions avec `conventions.md`, observations à arbitrer. **Pas de filtrage silencieux pour "clore proprement" l'axe.** Si tu mets un point de côté (à traiter à un autre axe par exemple), déclare-le explicitement avec raison. Miroir de l'anti-remplissage : ne force pas la trouvaille **et** ne masque pas une trouvaille du sub-agent.
 
-4. **Validation utilisateur** sur le plan de cet axe.
+4. **Plan ciblé à l'utilisateur** : N écarts sur cet axe, **citation SSOT verbatim** par écart, proposition de correction.
 
-5. **Corrections par écart** (un à la fois dans l'axe, pas tous en parallèle) : fichier, diff représentatif, accord, application. Si un écart révèle un **arbitrage philosophique légitime** (default SSOT vs bascule contextuelle assumée), pose la question à l'utilisateur avant de proposer le refactor — capture la bascule dans `docs/conventions.md` du projet (cf. `philosophy §9`).
+5. **Validation utilisateur** sur le plan de cet axe.
 
-6. **Mise à jour de `docs/conventions.md` du projet** si bascule actée pour cet axe.
+6. **Corrections par écart** (un à la fois dans l'axe, pas tous en parallèle) : fichier, diff représentatif, accord, application. Si un écart révèle un **arbitrage philosophique légitime** (default SSOT vs bascule contextuelle assumée), pose la question à l'utilisateur avant de proposer le refactor — capture la bascule dans `docs/conventions.md` du projet (cf. `philosophy §9`).
 
-7. **Passage à l'axe suivant**.
+7. **Mise à jour de `docs/conventions.md` du projet** si bascule actée pour cet axe.
+
+8. **Passage à l'axe suivant**.
 
 **INVARIANT** — aucune modification sans accord explicite. Le sub-agent **ne modifie rien** non plus — il rapporte uniquement.
 
 ## Étape 3 — Validation finale globale
 
-Une fois tous les axes traités, déléguer une **passe globale** à un sub-agent qui vérifie :
+Deux passes à déléguer à **des sub-agents fresh distincts** (contexte zéro chacun) — l'objectif est d'attaquer l'angle mort de la session principale par un regard indépendant. Le coût supplémentaire (2 sub-agents) est marginal vs le risque de trous structurels manqués.
 
-- Pas de régression introduite par les corrections successives (incohérence entre Lot 1 et Lot 2/3, type cassé, `cargo check` qui ne passe plus, `tsc --noEmit` qui ne passe plus, build qui échoue).
-- Cohérence d'ensemble (aucun axe applicable laissé de côté, observations hors-SSOT consolidées en mention factuelle finale).
+**Passe 1 — Re-dérivation indépendante de la checklist** : un sub-agent fresh charge la SSOT (philosophy + typescript + rust + atomic-design + `docs/conventions.md` du projet) et **dérive sa propre checklist d'axes applicables** au projet, **sans connaître ceux que la session a traités**. Il retourne sa liste. Tu compares ensuite à la liste des axes traités par la session. Si écart → relance la boucle Étape 2 sur les axes manqués. C'est le **levier anti-checklist-incomplète** : la dérivation d'axes n'est pas reproductible entre sessions, un second regard indépendant capture les axes oubliés.
 
-Si findings → mini-boucle ciblée sur ces écarts. Si rien → **rapport final court** (3-6 lignes : axes traités, écarts corrigés, observations hors-SSOT restantes en mention factuelle, état de `docs/conventions.md`).
+**Passe 2 — Régression + vérification point par point** : un autre sub-agent fresh vérifie :
+
+- **Point par point que chaque correction appliquée est effectivement présente** dans le code (pas juste l'absence de régression — la passe finale en session courante est biaisée). Sortie type matrice "N/N appliqués par axe".
+- Aucune régression introduite par les corrections successives : `pnpm tsc --noEmit`, `pnpm lint`, `cargo check` côté `src-tauri/`, build du framework, aucun import cassé, aucune référence aux anciens chemins.
+- Cohérence d'ensemble (observations hors-SSOT consolidées en mention factuelle finale).
+
+Si findings → mini-boucle ciblée. Si rien → **rapport final court** (3-6 lignes : axes traités, corrections appliquées, observations hors-SSOT restantes, état de `docs/conventions.md`).
+
+**Reconnaissance honnête** : ces deux passes réduisent le risque de trous mais ne le suppriment pas. La méthode complète reste *audit → corrections → re-audit fresh dans une session neuve* — particulièrement pour les projets critiques. 2 re-audits fresh successifs jusqu'à convergence (0 nouvelle trouvaille) est la garantie réelle.
 
 ## Anti-patterns du skill
 
@@ -104,8 +113,9 @@ Si findings → mini-boucle ciblée sur ces écarts. Si rien → **rapport final
 - ✗ Audit global en bloc avant de découper en axes — perte d'attention garantie, écarts manqués.
 - ✗ Liste d'axes pré-câblée dans le skill — la SSOT évolue, la checklist se dérive à chaque run.
 - ✗ Traiter plusieurs écarts d'un axe en parallèle dans la phase de correction — un écart peut en invalider un autre.
-- ✗ LLM principal qui Read le code applicatif en profondeur — c'est la responsabilité du sub-agent. Le principal reste sur SSOT + posture + orchestration.
+- ✗ LLM principal qui Read le code applicatif en profondeur — c'est la responsabilité du sub-agent. Le principal reste sur SSOT + posture + orchestration. **Spot-check ciblé toléré** uniquement si scope ≤4 fichiers, déclaration explicite de transgression (*"je vérifie un point que le sub-agent a écarté trop vite"*), et raison concrète (sous-livraison sub-agent, faux positif suspect à confirmer). Sinon → redéléguer un sub-agent ciblé.
 - ✗ **Forcer la trouvaille pour "remplir" un axe** — si l'axe est conforme, dire "conforme" explicitement et passer. Biais LLM "il faut produire des findings sinon j'ai raté ma mission" — exactement ce qu'il faut résister (cf. `philosophy §8`).
+- ✗ **Filtrer silencieusement un finding du sub-agent** pour "clore proprement" l'axe. Miroir de l'anti-remplissage : ne pas forcer la trouvaille **et** ne pas masquer une trouvaille. Remonter intégralement, déclarer explicitement ce qui est mis de côté avec raison.
 - ✗ Recommander la migration Electron→Tauri **sans signal** — si Electron est documenté et choisi dans `conventions.md`, respecter.
 - ✗ Recommander un router en mono-window "au cas où" — overhead inutile.
 - ✗ Demander de "tout typer" l'IPC manuellement sans considérer `tauri-specta` (codegen depuis Rust).
