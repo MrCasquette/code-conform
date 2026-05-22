@@ -1,6 +1,6 @@
 ---
 name: audit-app-desktop
-description: Audit d'une app desktop Tauri (ou Electron) aux conventions code-conform — sécurité allowlist/CSP, IPC typé, atomic, persistance locale, distribution. Mode audit philosophy §8 — pas d'auto-modification.
+description: Audit d'une app desktop Tauri (ou Electron) aux conventions code-conform — sécurité allowlist/CSP comme convention de moindre privilège, IPC typé, atomic, persistance locale. Boucle par axe avec sub-agent ciblé. Mode audit philosophy §8 — pas d'auto-modification.
 ---
 
 # /audit-app-desktop
@@ -11,167 +11,114 @@ Si l'app communique avec un serveur compagnon développé en parallèle → renv
 Si le projet est vide → `/bootstrap-app-desktop`.
 Si c'est un SPA web sans `src-tauri/` → `/audit-site-vitrine` ou `/audit-saas` selon profil.
 
+## Posture (lire avant tout)
+
+L'audit mesure la **conformité aux conventions code-conform** — pas tous les bugs ou imperfections détectables. La distinction est structurante :
+
+- **Dans la SSOT** (philosophy, atomic-design, typescript, rust) → écart au référentiel, organisé en **lots ordonnés par criticité architecturale** (recadrage fondations → refactors transverses → détails ponctuels). **Spécificité app desktop** : la sécurité Tauri (allowlist au minimum nécessaire, CSP active, scopes FS bornés) est une **convention code-conform de moindre privilège** (cf. `bootstrap-app-desktop`) — elle vit en **Lot 1 fondations**, pas en hors-SSOT.
+- **Hors SSOT** (cold start performance, code signing publique, polish cross-platform, bugs ponctuels métier) → observations signalées dans une section dédiée, **jamais mélangées aux lots SSOT**.
+
+**Pattern de travail (INVARIANT)** : l'audit ne se fait **pas en une passe globale**. Le LLM principal n'inspecte **pas** le projet directement en profondeur — il dérive sa propre checklist d'axes depuis la SSOT chargée, puis pour chaque axe **délègue le scan à un sub-agent ciblé**. Cela évite la dilution d'attention en long contexte (cf. `RATIONALE §12`) qui fait manquer des écarts en audit-en-bloc.
+
+**Anti-pattern signature à éviter** : produire un rapport "audit qualité de code générique" avec des références SSOT plaquées dessus (citations `philosophy §3` sans phrase-clé, écarts SSOT et bugs ponctuels au même niveau, plan d'attaque absent). C'est un audit *amélioré*, pas un audit *code-conform*.
+
+**Audit honnête (anti-remplissage)** — cf. `philosophy §8` : si un axe est conforme, **dis-le explicitement** ("conforme") et passe au suivant. Ne force pas la trouvaille pour "remplir" l'axe. Un axe sans écart est un signal positif, pas un audit raté. Cette consigne s'applique au LLM principal **et** doit être passée explicitement au briefing de chaque sub-agent.
+
 ## Pré-requis — SSOT à charger
 
-- `~/.code-conform/docs/00-philosophy.md` — mode audit (§8), filtre fondamental.
-- `~/.code-conform/docs/languages/typescript.md` — frontière, idiomes TS.
+- `~/.code-conform/docs/00-philosophy.md` — invariants, mode audit (§8), filtre fondamental.
+- `~/.code-conform/docs/languages/typescript.md` — strict TS, frontière, conventions naming, modules domaine.
 - `~/.code-conform/docs/languages/rust.md` — côté `src-tauri/`.
 - `~/.code-conform/docs/design/atomic-design.md` — atomic, tokens structure, a11y, smells. Couvre l'archi UI ; pas la dimension design pure (brand, ambiance).
 - `docs/conventions.md` du projet si présent.
 
-## Étape 1 — Cartographie
+## Hard rule — usage de la SSOT (INVARIANT)
 
-Inspecter sans modifier :
+Quand tu juges un écart, tu **dois** consulter la section SSOT pertinente **au moment** où tu formules l'écart — pas en lecture inspirationnelle au démarrage. Charger les docs en début de session ≠ les avoir en mémoire au moment du rapport (dilution d'attention en long contexte, cf. `RATIONALE §12`). Le risque est **plus élevé** ici qu'en bootstrap : contexte multi-axes pluri-passes, dérive vers training data ("audit générique de qualité de code") au lieu de la SSOT.
 
-- **Runtime** : `src-tauri/Cargo.toml` (Tauri version) ou `electron` dans `package.json`. Si Electron sans `docs/conventions.md` qui le justifie → écart à signaler.
-- **Frontend stack** : React/Vue/Svelte, Vite version, Tailwind v4 ?
-- **`tauri.conf.json`** : allowlist (qu'est-ce qui est activé ?), CSP, scopes FS, identifier.
-- **Commands Rust** : `src-tauri/src/commands/` ou équivalent — combien, groupées par domaine ou en vrac.
-- **Persistance** : plugin `tauri-plugin-store` / `tauri-plugin-sql` / FS direct / aucun.
-- **State** : Zustand, Redux, Pinia, autre.
-- **DS** : `src/components/` — appliquer la grille DS depuis `atomic-design.md` (§3 atomic, §4 tokens, §5 composants, §11 a11y, §13 smells).
-- **Fenêtrage** : `tauri.conf.json > app.windows` — mono ou multi.
-- **Updater** : `tauri-plugin-updater` présent ? Endpoint configuré ?
-- **`docs/conventions.md`** : présent ? Aligné ?
+Concrètement :
 
-Annonce la carte en 5-8 lignes.
+- **`Read` la section ciblée juste avant** de formuler l'écart (ex: `philosophy §3` pour une classe-acteur vs donnée pure, `atomic-design.md §13` pour un smell DS, `philosophy §5` pour la frontière IPC, `rust.md` pour les commands Rust).
+- **Cite la phrase-clé ou le pattern exact** dans le rapport ("`philosophy §3` : *la classe est réservée à l'acteur avec état/deps*"), pas une reformulation de mémoire.
 
-## Étape 2 — Grille d'audit
+Anti-patterns :
 
-### A — Runtime et configuration
+- ✗ *"Je connais le pattern, j'applique"* → dérive vers audit générique.
+- ✗ Citer un numéro de section sans la phrase-clé (`philosophy §3` seul = référence floue, pas opposable).
+- ✗ Mélanger écarts SSOT et observations hors SSOT au même niveau → effet "massue indistincte" sur l'utilisateur.
 
-- [ ] Tauri ≥ 2.0 (v1 = migration à proposer, encore supporté mais fin de vie).
-- [ ] Electron seulement si `docs/conventions.md` documente le signal — sinon écart majeur, proposer rebootstrap Tauri ou capture du signal.
-- [ ] `tauri.conf.json` : identifier en reverse-DNS unique (`com.user.app`).
-- [ ] Pas de config morte (entrées plugins non utilisés).
+## Étape 1 — Préparation et checklist dérivée
 
-### B — Sécurité (CRITIQUE)
+**Lecture surface uniquement** : `package.json`, `src-tauri/Cargo.toml`, `src-tauri/tauri.conf.json`, structure top-level (`src/`, `src-tauri/src/`), `docs/conventions.md` du projet. **Pas de Read en profondeur** du code applicatif — c'est le sub-agent qui s'en chargera, axe par axe.
 
-- [ ] **Allowlist au minimum nécessaire** — `"all": true` = écart majeur.
-- [ ] Scopes FS bornés (`$APPDATA/*` ok, `$HOME/**` à justifier).
-- [ ] CSP active dans `tauri.conf.json > app.security.csp`. Pas de `unsafe-inline` ni `unsafe-eval` sauf signal acté.
-- [ ] Pas de secrets dans `tauri.conf.json` (config publique).
-- [ ] Si SQLite : pas de SQL concaténé côté Rust (utilisation des params).
-- [ ] HTTP client (`tauri-plugin-http`) : allowlist URL si activé.
+À partir de la SSOT chargée et du projet observé en surface, **dérive ta propre checklist d'axes à auditer**. Ne suis pas une liste pré-câblée — elle dérive de la SSOT effective et évolue avec elle.
 
-### C — IPC et frontière (philosophy §5 INVARIANT)
+**Critère d'ordonnancement** :
 
-- [ ] Commands Rust typées (`#[tauri::command]` + types Rust clairs).
-- [ ] Côté TS : soit `tauri-specta` (codegen), soit parse Zod en sortie d'`invoke`. **Pas de cast `as T` aveugle** côté front.
-- [ ] Wrapper `invoke` centralisé (`src/lib/tauri.ts`) — pas d'`invoke` éparpillé sans frontière.
-- [ ] Erreurs Rust remontées proprement (`Result<T, AppError>` sérialisable, pas `String` opaque).
+> Du plus structurant au plus ponctuel. Un écart sur l'axe N+1 ne doit pas devenir caduque si l'axe N est corrigé d'abord.
+>
+> - **Fondations** : tout ce qui touche au squelette du projet (slicing, formes citoyennes, frontières IPC, **sécurité Tauri allowlist/CSP**, structure atomic). Un refactor ici déplace tout le reste.
+> - **Transverses** : ce qui apparaît à N endroits cohérents (tokens, conventions de variants, namespace au point d'import, idiomes Rust dans `src-tauri/`, versioning, persistance locale). Mécanique après les fondations.
+> - **Détails** : feuilles isolées (a11y, conventions HTML, raccourcis OS, petits bugs). Indépendants entre eux.
+>
+> Identifie les axes en parcourant la SSOT chargée — **INVARIANTS d'abord** (sécurité Tauri, frontière Zod IPC, posture interactive), règles dures ensuite, conventions au-delà. Couvre tout ce qui est applicable au type de projet audité, rien d'inventé hors SSOT.
 
-### D — Frontend / DS (depuis `atomic-design.md`)
+Annonce à l'utilisateur :
 
-Appliquer la grille DS complète. Spécificités desktop :
+- **Carte rapide** en 5-8 lignes (Tauri version, frontend stack, persistance, fenêtrage, plateformes cibles — depuis la lecture surface).
+- **Liste des axes** à auditer dans l'ordre, courte (titre + section SSOT cible). Pas de findings encore — la boucle commence à l'Étape 2.
 
-- [ ] `templates/` typiquement présent et justifié (mono-window sans routing externe).
-- [ ] Pas de `react-router` en mono-window — si présent sans signal, écart.
-- [ ] Zustand pour state global (ou équivalent framework). Pas de Context React pour state non-thème.
+## Étape 2 — Boucle par axe
 
-### E — Persistance locale
+**Pour chaque axe** dans l'ordre établi à l'Étape 1, exécuter la séquence suivante. **Un axe à la fois.** Pas de parallélisation.
 
-- [ ] Choix cohérent avec besoin :
-  - JSON pour < 1k entrées, schéma simple → `tauri-plugin-store`.
-  - Relationnel / requêtes → SQLite via `tauri-plugin-sql`.
-  - Fichiers user (éditeur, media) → FS direct + scope précis.
-- [ ] Migrations SQLite versionnées (`src-tauri/migrations/`) si SQLite.
-- [ ] Frontière Zod en sortie de lecture store (la donnée stockée peut avoir été migrée à chaud).
-- [ ] Pas de duplication state runtime (Zustand) vs store persisté — clarté sur ce qui hydrate quoi.
+1. **Briefing du sub-agent** : section SSOT pertinente à charger + pattern précis à chercher dans tout le projet. Le briefing doit être ciblé, sans déborder vers d'autres axes, et inclure la posture d'audit honnête. Exemple type :
+   > *"Charge `philosophy §5` INVARIANT + le wrapper IPC dans `bootstrap-app-desktop` SKILL.md §3.5. Cherche dans `src/` toutes les invocations `invoke(...)` qui ne passent pas par le wrapper centralisé `src/lib/tauri.ts` ou qui castent le retour via `as T` au lieu de parser via Zod / `tauri-specta`. Pour chaque occurrence, rapporte fichier:ligne, le code concerné, et le verdict de conformité. **Si aucun écart : retourne 'conforme' explicitement. Ne force pas la trouvaille pour 'remplir' la mission.** Ne propose pas de correction. Findings factuels uniquement."*
 
-### F — Rust (renvoi `rust.md`)
+2. **Délégation** via le mécanisme d'agent (sub-task / Explore agent selon contexte). Le sub-agent retourne ses findings sur cet axe **uniquement**.
 
-Audit allégé côté `src-tauri/` :
+3. **Plan ciblé à l'utilisateur** : N écarts sur cet axe, **citation SSOT verbatim** par écart, proposition de correction.
 
-- [ ] Cargo workspace si multi-crates, sinon `src-tauri/` standalone OK.
-- [ ] Commands groupées par domaine dans `src/commands/<area>.rs`, pas un `main.rs` géant.
-- [ ] Pas d'`unwrap`/`expect` en chemin chaud (renvoi `rust.md`).
-- [ ] Logs via `tracing` ou `log`, pas `println!` en prod.
+4. **Validation utilisateur** sur le plan de cet axe.
 
-### G — Distribution et updater
+5. **Corrections par écart** (un à la fois dans l'axe, pas tous en parallèle) : fichier, diff représentatif, accord, application. Si un écart révèle un **arbitrage philosophique légitime** (default SSOT vs bascule contextuelle assumée), pose la question à l'utilisateur avant de proposer le refactor — capture la bascule dans `docs/conventions.md` du projet (cf. `philosophy §9`).
 
-- [ ] Plateformes cibles déclarées (`tauri.conf.json > bundle.targets`).
-- [ ] Icônes complètes par plateforme (`icons/` généré).
-- [ ] Updater configuré si Q6 oui : endpoint privé/public, pubkey signature présente.
-- [ ] Code signing : signaler absent si distribution publique macOS/Windows (sinon Gatekeeper / SmartScreen bloquent).
+6. **Mise à jour de `docs/conventions.md` du projet** si bascule actée pour cet axe.
 
-### H — Accessibilité desktop (renvoi `atomic-design.md` §11)
+7. **Passage à l'axe suivant**.
 
-- [ ] Navigation clavier complète (Tab/Shift+Tab, Enter, Escape).
-- [ ] Focus visible (pas de `outline: none` non remplacé).
-- [ ] Raccourcis OS-natifs si pertinent (`Cmd+W` close, `Cmd+,` settings sur macOS).
-- [ ] Pas de menu/dialog réinventé — utilisation lib headless a11y (Radix, Reka, etc.).
+**INVARIANT** — aucune modification sans accord explicite. Le sub-agent **ne modifie rien** non plus — il rapporte uniquement.
 
-### I — Build et DX
+## Étape 3 — Validation finale globale
 
-- [ ] `pnpm tauri dev` lance proprement.
-- [ ] `pnpm tauri build` produit un binaire fonctionnel.
-- [ ] `cargo check` côté `src-tauri/` passe sans warning suspect.
-- [ ] `tsc --noEmit` passe.
-- [ ] Biome (ou linter projet) appliqué uniformément.
+Une fois tous les axes traités, déléguer une **passe globale** à un sub-agent qui vérifie :
 
-### J — `docs/conventions.md`
+- Pas de régression introduite par les corrections successives (incohérence entre Lot 1 et Lot 2/3, type cassé, `cargo check` qui ne passe plus, `tsc --noEmit` qui ne passe plus, build qui échoue).
+- Cohérence d'ensemble (aucun axe applicable laissé de côté, observations hors-SSOT consolidées en mention factuelle finale).
 
-- [ ] Présent.
-- [ ] Aligné avec choix observés (persistance, IPC, fenêtrage, plateformes, updater).
-- [ ] Justifie les bascules vs default code-conform si présentes (Electron, Vue/Svelte au lieu de React).
-
-## Étape 3 — Rapport
-
-```
-# Audit app desktop — <projet>
-
-## Carte rapide
-- Tauri v<…> | Electron (signal: <…>)
-- Frontend : <React 19 + Vite | …>
-- Persistance : <store JSON | SQLite | FS | aucun>
-- Fenêtrage : <mono | multi: N>
-- Updater : <on | off>
-- DS : <conforme | écarts mineurs | écarts majeurs>
-
-## Écarts majeurs (sécurité d'abord)
-1. ...
-
-## Écarts mineurs
-1. ...
-
-## Conforme
-- ...
-
-## Suggestions hors écart
-- ...
-```
-
-## Étape 4 — Correction interactive
-
-**INVARIANT** — aucune modification sans accord explicite.
-
-Lots typiques (sécurité prioritaire) :
-
-1. **Réduire allowlist Tauri** au strict nécessaire — premier lot car impact direct sécurité.
-2. **CSP** : retirer `unsafe-inline`/`unsafe-eval` ou capter le signal dans `conventions.md`.
-3. **Frontière IPC** : introduire `src/lib/tauri.ts` wrapper, parser Zod en sortie, remplacer `as T`.
-4. **DS archi** : corrections issues de l'axe D (atomic, tokens structure, variants, a11y) — par lots si volumineux.
-5. **Migration Tauri v1 → v2** si applicable (gros lot, planifier).
-6. **Persistance** : aligner choix vs besoin si mismatch (ex: JSON store qui dépasse → migrer vers SQLite).
-7. **Updater + code signing** si distribution publique.
-8. **`docs/conventions.md`** : créer ou compléter.
-
-Pour chaque lot : fichiers, diff, accord, application.
+Si findings → mini-boucle ciblée sur ces écarts. Si rien → **rapport final court** (3-6 lignes : axes traités, écarts corrigés, observations hors-SSOT restantes en mention factuelle, état de `docs/conventions.md`).
 
 ## Anti-patterns du skill
 
-- ✗ Auto-modification sans accord.
-- ✗ Recommander la migration Electron→Tauri sans signal — si Electron est documenté et choisi, respecter.
-- ✗ Demander de "tout typer" l'IPC manuellement sans considérer tauri-specta.
-- ✗ Inventer un seuil "trop de commands" — philosophy §9, demander à l'utilisateur.
+- ✗ Auto-modification sans accord (ni LLM principal, ni sub-agent).
+- ✗ Audit global en bloc avant de découper en axes — perte d'attention garantie, écarts manqués.
+- ✗ Liste d'axes pré-câblée dans le skill — la SSOT évolue, la checklist se dérive à chaque run.
+- ✗ Traiter plusieurs écarts d'un axe en parallèle dans la phase de correction — un écart peut en invalider un autre.
+- ✗ LLM principal qui Read le code applicatif en profondeur — c'est la responsabilité du sub-agent. Le principal reste sur SSOT + posture + orchestration.
+- ✗ **Forcer la trouvaille pour "remplir" un axe** — si l'axe est conforme, dire "conforme" explicitement et passer. Biais LLM "il faut produire des findings sinon j'ai raté ma mission" — exactement ce qu'il faut résister (cf. `philosophy §8`).
+- ✗ Recommander la migration Electron→Tauri **sans signal** — si Electron est documenté et choisi dans `conventions.md`, respecter.
+- ✗ Recommander un router en mono-window "au cas où" — overhead inutile.
+- ✗ Demander de "tout typer" l'IPC manuellement sans considérer `tauri-specta` (codegen depuis Rust).
 - ✗ Auditer la business logic métier au-delà des frontières IPC et DS.
-- ✗ Recommander un router en mono-window "au cas où".
+- ✗ Inventer un seuil "trop de commands" ou "trop de fenêtres" — `philosophy §9`, demander à l'utilisateur si le seuil influence une décision.
+- ✗ Sortir la sécurité Tauri (allowlist/CSP) en *hors-SSOT* — c'est une convention de moindre privilège acquise par `bootstrap-app-desktop`, donc Lot 1 fondations.
 
 ## Out of scope (renvoi)
 
+- **Site vitrine éditorial** (présentation, restaurant, association — peu de JS, contenu majoritairement statique) → `/audit-site-vitrine`.
+- **App + serveur compagnon** développé en parallèle (le desktop n'est qu'une couche d'un système plus large) → `/audit-cloud`.
+- **Web SPA pure sans `src-tauri/`** → `/audit-site-vitrine` ou `/audit-saas` selon profil.
 - **Direction artistique / brand design** (palette identitaire, typo character, ambiance) → `/design-system` (à venir).
-- **App + serveur compagnon** → `/audit-cloud`.
-- **Web SPA pure sans `src-tauri/`** → `/audit-site-vitrine` ou `/audit-saas`.
 - **CI/CD release pipeline** → hors scope conventions, sujet propre.
 - **Performance binaire / cold start** → hors scope, signal utilisateur requis.
+- **Code signing macOS/Windows distribution publique** → mention factuelle hors-SSOT, à arbitrer indépendamment.
