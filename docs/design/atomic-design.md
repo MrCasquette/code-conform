@@ -92,7 +92,7 @@ L'assemblage type est `cn(BASE, VARIANT[variant], SIZE[size], className)` en Rea
 
 - **Atom** — primitive non décomposable utile : `Button`, `Input`, `Label`, `Badge`, `Spinner`, `Avatar`, `Switch`, `Tooltip`. Pas de logique métier. Reçoit ses données via props, propage les events. Réutilisable dans n'importe quel contexte.
 - **Molecule** — assemblage minimal de 2-3 atoms avec un rôle fonctionnel unitaire : `SearchField` (Input + Button), `FormField` (Label + Input + ErrorMessage), `ImagePreview`. Toujours réutilisable, pas spécifique à un concept métier.
-- **Organism** — composition de molecules et/ou atoms portant une **section identifiable** d'UI : `Header`, `Footer`, `DropZone`, `ImageList`, `LoginForm`. Peut être lié à un concept métier (cf. §10 slicing). C'est ici que la cohérence visuelle d'une fonctionnalité se joue.
+- **Organism** — composition de molecules et/ou atoms portant une **section identifiable** d'UI : `Header`, `Footer`, `DropZone`, `ImageList`, `LoginForm`, `BookForm`, `UserAvatar`. Peut consommer un concept métier via les helpers/types/hooks de `domain/<concept>/` — le composant **reste dans `components/organisms/`**, sa logique métier vit dans le slice domain (cf. §10). C'est ici que la cohérence visuelle d'une fonctionnalité se joue.
 
 **Niveaux optionnels — à introduire sur signal réel** :
 
@@ -102,8 +102,9 @@ L'assemblage type est `cn(BASE, VARIANT[variant], SIZE[size], className)` en Rea
 - **Icons** — sortir les icônes d'`atoms/` quand le volume le justifie (≥ une dizaine d'icônes). `components/icons/` dédié, un fichier par icône ou un `Icon.tsx` paramétré selon préférence.
 
 **Critère de placement** :
-- *Réutilisable n'importe où, pas de métier* → atom ou molecule.
-- *Réutilisable mais lié à un concept métier* → organism dans le slice du concept (cf. §10).
+- *Primitive non décomposable, transverse* → atom.
+- *Assemblage 2-3 atoms à rôle unitaire, transverse* → molecule.
+- *Section identifiable d'UI (transverse ou métier)* → organism dans `components/organisms/`. La logique métier qu'il consomme vit dans `domain/<concept>/` (cf. §10).
 - *Composition spatiale sans données, framework ne la porte pas* → template (optionnel).
 - *Identité de marque, séparation visuelle voulue* → brand (optionnel).
 - *Volume d'icônes important* → icons (optionnel).
@@ -112,14 +113,15 @@ L'assemblage type est `cn(BASE, VARIANT[variant], SIZE[size], className)` en Rea
 **Anti-dogmes** :
 - **Pas de quota** : un projet peut vivre avec 5 atoms et 2 organisms — c'est sain si le métier l'exige. Ne pas créer un atom "au cas où" (cf. philosophy §4).
 - **Pas de promotion mécanique** : une molecule utilisée une seule fois reste là où elle vit. Promotion vers `ui/` partagé sur signal d'usage réel (≥2 consommateurs), cf. philosophy §6.
-- **La hiérarchie est descriptive, pas prescriptive** : un composant qui ne tient pas dans une case n'est pas un bug — c'est probablement un *organism métier* qui appartient à son slice. Force la case = trahit le métier.
+- **La hiérarchie est descriptive, pas prescriptive** : un composant qui ne tient pas dans une case n'est pas un bug — c'est probablement un organism qui compose plusieurs molecules/atoms. **Il reste dans `components/organisms/`** quel que soit son couplage métier — la logique métier complexe qu'il consomme vit dans `domain/<concept>/` (helpers, hooks, schémas, types), pas dans le fichier composant lui-même (cf. §10).
 
 ```
-✗ components/atoms/Button.tsx, components/atoms/UserAvatar.tsx, components/atoms/PriceTag.tsx
-  (UserAvatar et PriceTag sont métier — pas des atoms)
-✓ components/atoms/Button.tsx
-  domain/user/UserAvatar.tsx
-  domain/product/PriceTag.tsx
+✗ components/atoms/UserAvatar.tsx, components/atoms/PriceTag.tsx
+  (UserAvatar compose Avatar + Name + Badge — c'est un organism, pas un atom)
+✓ components/organisms/UserAvatar.tsx
+  domain/user/User.ts                 ← type + helpers
+  domain/user/User.schema.ts          ← Zod
+  domain/user/useUserSession.ts       ← hook métier (sans JSX)
 ```
 
 **Barrels par niveau** : `components/atoms/index.ts` réexportant les composants du niveau est une convention saine — consommateur écrit `import { Button, Badge } from '@/components/atoms'`. À adopter si plusieurs composants par niveau ; superflu pour 1-2 fichiers.
@@ -473,62 +475,84 @@ export function Button({ variant = 'primary', className, ...rest }: ButtonProps)
 
 ---
 
-## 10. Organisation physique — atomic design × slicing vertical
+## 10. Organisation physique — UI et domain séparés
 
-**Le piège** : appliquer atomic design comme un slicing horizontal global (`atoms/`, `molecules/`, `organisms/` à la racine, tout mélangé) reproduit l'anti-pattern de philosophy §6 — les concepts métier éparpillés.
+**Principe** : séparation stricte entre la **couche UI** (tous les composants, atomic design pur) et la **couche domain** (logique métier sans JSX).
 
-**Le bon mariage** : atomic design pour le **DS transverse** (ce qui n'a pas de métier), slicing vertical par concept pour **les organisms métier**.
+- **Couche UI** — `src/components/<atoms|molecules|organisms>/` contient **tous** les composants UI, qu'ils soient transverses ou liés à un concept métier. Pas d'exception : un `BookForm` qui consomme `domain/booking/` reste un organism dans `components/organisms/`. Atomic design tient comme structure de composition pure.
+- **Couche domain** — `src/domain/<concept>/` contient **uniquement** les artefacts non-UI : types, schémas Zod, helpers, repository/api, stores métier, hooks métier (logique stateful sans JSX). **Pas de `.tsx`/`.vue`/`.svelte`/`.astro`** dans `domain/`.
+
+**Pourquoi cette séparation** :
+- **Domain testable unitairement** sans framework UI (pas besoin de monter React/Astro pour tester un helper booking).
+- **Domain portable** : changer Astro → Next, React → Vue n'impacte pas `domain/`.
+- **Atomic design préservé** : `components/organisms/` reste rempli des vrais organisms (transverses ET métier), pas une coquille vide.
+- **Règle de placement triviale** : *"c'est un composant ?"* → `components/`. *"sinon ?"* → `domain/` (ou `hooks/`, `lib/`, `utils/` selon nature).
 
 ```
 src/
-├── components/                    ← design system transverse (atomic)
+├── components/                    ← TOUS les composants UI (atomic pur)
 │   ├── atoms/                     ← Button, Badge, Input, Spinner, Switch, Tooltip
 │   │   └── index.ts               ← barrel optionnel
 │   ├── molecules/                 ← FormField, SearchField, ImagePreview
-│   ├── organisms/                 ← Header, Footer, DropZone (génériques)
+│   ├── organisms/                 ← Header, Footer, BookForm, UserAvatar, ImageGallery, Landing
 │   ├── templates/                 ← AppLayout — optionnel (cf. §3)
 │   ├── brand/                     ← Logo, Signature — optionnel
 │   └── icons/                     ← icônes — optionnel si volume
-├── domain/
+├── domain/                        ← logique métier sans JSX
 │   ├── image/
 │   │   ├── Image.schema.ts        ← Zod SSOT (cf. typescript §2)
-│   │   ├── Image.ts               ← type + helpers (ou entity.ts selon convention projet)
-│   │   ├── ImageCard.tsx          ← organism métier — vit avec son concept
-│   │   ├── ImageGallery.tsx
-│   │   └── useImageUpload.ts      ← hook métier
-│   └── user/
-│       ├── User.schema.ts
-│       ├── User.ts
-│       └── UserAvatar.tsx         ← organism métier (utilise components/atoms/Avatar)
-├── stores/                        ← state global (Zustand) — `store/` singulier accepté
-│   ├── useDrawer.ts
-│   └── imageStore.ts
-├── hooks/                         ← hooks transverses non liés à un concept
+│   │   ├── Image.ts               ← type + helpers
+│   │   ├── Image.repository.ts    ← persistance
+│   │   └── useImageUpload.ts      ← hook métier (logique stateful sans JSX)
+│   ├── user/
+│   │   ├── User.schema.ts
+│   │   ├── User.ts
+│   │   └── useUserSession.ts
+│   └── booking/
+│       ├── booking.schema.ts
+│       ├── booking.helpers.ts
+│       ├── booking.api.ts
+│       └── booking.store.ts       ← store métier (Zustand) lié au concept
+├── hooks/                         ← hooks transverses non métier
 │   └── useTranslation.ts
 ├── lib/                           ← bindings techniques non-métier
 │   └── tauri.ts
 ├── utils/                         ← helpers techniques (cn, formatters, parsers)
-│   ├── index.ts                   ← export de cn et helpers transverses
+│   ├── index.ts
 │   └── format-date.ts
 └── (routing du framework)         ← app/ (Next), pages/ (Nuxt), routes/ (SvelteKit), App.tsx (SPA)
 ```
 
 **Critère de placement** :
-- *Sans métier, réutilisable n'importe où* → `components/` (atoms, molecules, organisms génériques).
-- *Avec métier, lié à un concept* → `domain/<concept>/` (organisms métier, hooks métier, schémas).
-- *State global partagé* → `stores/` (Zustand). State stateful local au composant → `useState`/`ref`/`$state` dans le composant (cf. §6).
-- *Hook transverse non métier* → `hooks/`. Hook métier → `domain/<concept>/`.
-- *Lien à une API technique externe* (Tauri, SDK, client tiers) → `lib/`.
-- *Helpers techniques* (formatters, parsers, `cn` en React ou `twMerge` direct en Vue/Svelte — cf. §2) → `utils/`.
-- *Branche données + layout* → routing du framework (`app/`, `pages/`, `routes/`).
+- *Composant UI (transverse ou métier)* → `components/<atoms|molecules|organisms>/`. Les composants liés à un concept consomment `domain/<concept>/` (helpers, types, hooks) mais restent dans la hiérarchie atomic.
+- *Logique métier pure (sans JSX)* → `domain/<concept>/` : types, schémas, helpers, repository, api, stores métier, hooks métier.
+- *State global lié à un concept* → `domain/<concept>/<concept>.store.ts`. State global transverse (drawer ouvert/fermé, thème) → `stores/` racine.
+- *State local au composant* → `useState`/`ref`/`$state` dans le composant (cf. §6).
+- *Hook métier (logique stateful sans JSX)* → `domain/<concept>/use<Concept>.ts`. Hook transverse non métier → `hooks/`.
+- *Lien à une API externe générique* (Tauri, SDK, client tiers) → `lib/`. Client lié à un concept → `domain/<concept>/<concept>.api.ts`.
+- *Helpers techniques* (formatters, parsers, `cn`) → `utils/`.
+- *Routing* → couche framework (`app/`, `pages/`, `routes/`).
 
-**Promotion** : un organism métier promu vers `components/organisms/` uniquement quand il devient générique (≥2 concepts l'utilisent à l'identique). Sinon il reste dans son slice. Cf. philosophy §6 — un composant à un seul consommateur appartient à ce consommateur.
+**Sous-organisation de `components/organisms/`** :
 
-**Templates** (si présents) : généralement transverses (`components/templates/`). S'ils deviennent métier-spécifiques (`OnboardingLayout` propre à un flow), déménagent dans le slice.
+Sur les projets où `organisms/` grossit beaucoup (>10-15 fichiers), sous-arbo facultative :
+
+```
+components/organisms/
+├── booking/BookForm.tsx
+├── page/Landing.astro
+└── navigation/Header.astro, Footer.astro
+```
+
+À **ne pas créer par anticipation** (cf. philosophy §4). 5-10 organisms à plat = OK.
+
+**Promotion** : un composant à un seul consommateur reste dans son niveau atomic actuel. Promouvoir vers un niveau supérieur (ou sortir vers un autre dossier) uniquement quand un autre consommateur émerge (≥2 — cf. philosophy §4).
+
+**Templates** (si présents) : dans `components/templates/`. Peuvent consommer des concepts métier sans changer de place.
 
 **Pages** : appartiennent au routing du framework, pas au DS. Elles consomment layouts (framework ou `templates/`) et organisms.
 
-**Note convention domain** : la forme exacte des fichiers de concept (`Image.schema.ts` + `Image.ts` vs `schema.ts` + `entity.ts`, présence d'une `Entity` classe avec value objects, etc.) relève du **doc langage** (`typescript.md` §2) et de `docs/conventions.md` du projet. Le doc UI ne tranche pas — il situe seulement *où* le code domain vit relativement au code UI.
+**Note convention domain** : la forme exacte des fichiers de concept (`Image.schema.ts` + `Image.ts` vs `schema.ts` + `helpers.ts` + `entity.ts`, présence d'une `Entity` classe avec value objects, etc.) relève du **doc langage** (`typescript.md` §2-3) et de `docs/conventions.md` du projet. Le doc UI tranche uniquement la séparation **UI vs non-UI**, pas la forme interne du domain.
 
 ---
 
@@ -564,7 +588,7 @@ Détails dans `typescript.md` §10 (et équivalents par langage). Rappels invari
 
 - **INVARIANT — mutation du domain depuis l'UI interdite**. L'UI utilise `Image.toProcessing(img)` (helper du concept), jamais `img.status = 'processing'`. Le composant orchestre l'affichage et délègue au domain pour les transformations.
 - **Le composant reçoit la donnée typée, retourne un event ou un callback**. Pas de "go fetch yourself" depuis un atom.
-- **Hooks métier** (`useImageUpload`, `useUserSession`) vivent **dans le slice du concept**, pas dans `ui/`. Un hook qui touche au domain n'est plus une primitive UI.
+- **Hooks métier** (`useImageUpload`, `useUserSession`) vivent **dans le slice du concept** (`domain/<concept>/use<Concept>.ts`), pas dans `components/` ni dans `hooks/` global. Un hook métier reste sans JSX — il porte la logique stateful, pas la présentation.
 - **Store global** consommé uniquement par les organisms et pages, pas par atoms/molecules. Si un atom a besoin de données, elles passent par props. Un atom branché au store global n'est plus réutilisable.
 
 ---
@@ -575,7 +599,7 @@ Détails dans `typescript.md` §10 (et équivalents par langage). Rappels invari
 |---|---|---|
 | 1 | Valeur visuelle en dur (`bg-blue-500`, `#fff`, `16px`) dans un composant | Token sémantique (`bg-surface-primary`, `p-md`) |
 | 2 | Concaténation manuelle de classes (`${a} ${b ? 'x' : 'y'}`) puis classes Tailwind en conflit non résolues | Selon framework : `cn(...)` en React, `:class` natif en Vue, `class:` en Svelte — **toujours combiné avec `tailwind-merge`** sur tout escape hatch `class`/`className` (cf. §2) |
-| 3 | Atom métier (`UserAvatar` dans `ui/atoms/`) | Organism dans `domain/user/` |
+| 3 | Atom métier (`UserAvatar` dans `atoms/`) | Organism dans `components/organisms/` + helpers/types/hooks dans `domain/user/` (cf. §10) |
 | 4 | Composant qui mute le domain (`img.status = …`) | Helper du concept (`Image.toProcessing(img)`) |
 | 5 | Atom branché au store global | Props uniquement pour atoms/molecules |
 | 6 | Store global pour état d'UI locale (toggle ouvert) | `useState` / `ref` / `$state` local |
@@ -595,7 +619,7 @@ Détails dans `typescript.md` §10 (et équivalents par langage). Rappels invari
 | 16 | Inline `style` pour valeurs statiques | Classes Tailwind ou variants |
 | 17 | Event listener global sans cleanup | Cleanup obligatoire (`return () => …`) |
 | 18 | CSS-in-JS runtime (styled-components, Emotion runtime) | Tailwind + variants |
-| 19 | Atomic design appliqué globalement à la racine, métier mélangé | Atomic pour `ui/` transverse, slicing vertical pour métier |
+| 19 | Composant `.tsx`/`.vue`/`.svelte`/`.astro` dans `domain/<concept>/` | Composant dans `components/<atoms\|molecules\|organisms>/`, logique métier extraite dans `domain/<concept>/` (helpers, hooks sans JSX) — cf. §10 |
 | 20 | Headless réinventé pour un dialog/menu/combobox | Lib headless a11y-aware (Radix, Ariakit, Headless UI…) |
 
 ---
