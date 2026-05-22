@@ -317,6 +317,31 @@ Trois règles transverses opposables à tout projet de la SSOT, indépendamment 
 
 **Upgrades volontaires uniquement.** Pas de bot de mise à jour automatique par défaut sur les projets *sustainable solo craft* — les majors arrivent sur signal de l'utilisateur, jamais par tirage de fond. Outils par écosystème (détails dans les docs langage) : `pnpm outdated` + `pnpm update [--latest]`, `cargo outdated` + `cargo update [-p <crate>]`. Renovate/Dependabot peuvent être activés sur signal acté dans `conventions.md` (cas typique : équipe + audit régulier des CVE).
 
+**Posture par défaut sur le choix de version cible : latest stable.** Rester à jour est d'abord une posture **sécurité** (CVE, patches transitifs) avant d'être une posture confort. Une version retardée doit avoir une raison concrète (incompatibilité connue, breaking change non testé, contrainte environnement) — pas l'inertie. À l'inverse, ne **jamais** prendre une version pré-release (`-beta`, `-rc`, `-next`) sans signal métier explicite : la dette s'accumule sur des API instables.
+
 **Pourquoi INVARIANT** : sans lockfile + frozen install, un projet en production peut casser à n'importe quel deploy à cause d'une mise à jour transitive imprévue. C'est la même logique que la frontière de validation §5 — faire payer la rigueur en amont (commiter le lock, refuser les drifts implicites) pour ne pas la payer en aval, multipliée (debug une nuit parce que la prod a tiré un patch transitif d'une dépendance qu'on n'a même pas dans le manifeste direct).
 
 **Ce que cette règle empêche** : déploiements non-reproductibles, mises à jour silencieuses introduites par un `npm install` sans lock, casse fortuite en CI à cause d'un patch transitif. Ce qu'elle permet : un état du projet figé et auditable à tout instant, des upgrades intentionnels et tracés.
+
+## 12. Consultation de la doc à jour avant d'écrire — INVARIANT
+
+**Principe** : avant d'écrire du code spécifique à un framework, langage ou lib donnée, **consulte la doc officielle de la version cible** — pas la mémoire interne, qui dérive du training data.
+
+**Pourquoi INVARIANT** : le training data d'un LLM est figé à une date. Astro v6 a des breaking changes vs v5 (`'astro:content'` deprecated, `astro/zod` introduit), Tailwind v4 abandonne `tailwind.config.js` au profit de `@theme` CSS, React 19 supprime `forwardRef`, Tauri v2 réorganise toute la conf vs v1. **Coder de mémoire = coder une version qui n'existe peut-être plus dans le projet.** Et l'utilisateur le découvre au build, ou pire en prod.
+
+**Concrètement** :
+
+1. **Repérer la version réelle** dans le manifeste — `package.json`, `Cargo.toml`, `composer.json`, `go.mod`. Pas la version "courante" supposée.
+2. **Consulter la doc officielle de cette version précise** — pas la doc latest globale, ni la doc générique de la lib. Outils disponibles : Context7 MCP (`mcp__plugin_context7_context7__query-docs`), WebFetch sur la doc officielle, doc embarquée dans `node_modules/` si présente.
+3. **Citer la phrase ou le pattern exact** extrait de la doc dans ton message. Cohérent avec la hard rule SSOT-à-consulter qui apparaît dans les skills — même mécanique, source différente (doc lib vs SSOT code-conform).
+
+**Anti-patterns** :
+
+- ✗ *"Je connais Astro, j'écris direct"* → dérive vers une version moyenne du training data.
+- ✗ Lire le `package.json` puis écrire de mémoire → cartographie vue, doc non consultée.
+- ✗ Consulter la doc en survol global au début puis écrire 30 messages plus tard sans re-vérifier → dilution d'attention en long contexte.
+- ✗ Inventer une API parce qu'elle "ressemble à ce que ferait la lib" → hallucination en règle.
+
+**Quand appliquer (sans dogmatisme)** : à chaque fois que tu écris du code spécifique à une lib/framework/langage **dont la version impacte l'API utilisée**. Pour les API stables (`Array.map`, `Date.toISOString`, `String.split`) : pas besoin. Pour les API de framework qui bougent vite (Astro, Next, Nuxt, React, Tauri, Tailwind, ORM, validators, runtimes Bun/Deno) : systématique. Le critère est *"cette API a-t-elle changé entre deux majors récents ?"*. Si oui, vérifier la version cible avant d'écrire.
+
+**Ce que cette règle empêche** : code qui compile dans la tête du LLM mais pas dans le projet, API inventées, hallucinations de méthodes qui n'existent pas dans la version installée, dérive silencieuse vers la version moyenne du training data. Ce qu'elle permet : code qui marche du premier coup, alignement avec ce que voit réellement l'utilisateur dans son `node_modules/`.
