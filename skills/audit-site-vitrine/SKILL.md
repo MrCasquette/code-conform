@@ -20,6 +20,8 @@ L'audit mesure la **conformité aux conventions code-conform** — pas tous les 
 
 **Anti-pattern signature à éviter** : produire un rapport "audit qualité de code générique" avec des références SSOT plaquées dessus (citations `philosophy §3` sans phrase-clé, écarts SSOT et bugs HTML au même niveau, plan d'attaque absent). C'est un audit *amélioré*, pas un audit *code-conform*.
 
+**Audit honnête (anti-remplissage)** — cf. `philosophy §8` : si un axe est conforme, **dis-le explicitement** ("conforme") et passe au suivant. Ne force pas la trouvaille pour "remplir" l'axe. Un axe sans écart est un signal positif, pas un audit raté. Cette consigne s'applique au LLM principal **et** doit être passée explicitement au briefing de chaque sub-agent.
+
 ## Pré-requis — SSOT à charger
 
 - `~/.code-conform/docs/00-philosophy.md` — invariants, mode audit (§8), filtre fondamental.
@@ -67,8 +69,8 @@ Annonce à l'utilisateur :
 
 **Pour chaque axe** dans l'ordre établi à l'Étape 1, exécuter la séquence suivante. **Un axe à la fois.** Pas de parallélisation.
 
-1. **Briefing du sub-agent** : section SSOT pertinente à charger + pattern précis à chercher dans tout le projet. Le briefing doit être ciblé, sans déborder vers d'autres axes. Exemple type :
-   > *"Charge `philosophy §3` + `typescript.md §3`. Cherche dans `src/` toutes les classes qui ne contiennent que des méthodes statiques (`class X { static ... }`) sans état d'instance ni dépendance injectée. Pour chaque occurrence, rapporte fichier:ligne, le code concerné, et le verdict de conformité. Ne propose pas de correction. Findings factuels uniquement."*
+1. **Briefing du sub-agent** : section SSOT pertinente à charger + pattern précis à chercher dans tout le projet. Le briefing doit être ciblé, sans déborder vers d'autres axes, et inclure la posture d'audit honnête. Exemple type :
+   > *"Charge `philosophy §3` + `typescript.md §3`. Cherche dans `src/` toutes les classes qui ne contiennent que des méthodes statiques (`class X { static ... }`) sans état d'instance ni dépendance injectée. Pour chaque occurrence, rapporte fichier:ligne, le code concerné, et le verdict de conformité. **Si aucun écart : retourne 'conforme' explicitement. Ne force pas la trouvaille pour 'remplir' la mission.** Ne propose pas de correction. Findings factuels uniquement."*
 
 2. **Délégation** via le mécanisme d'agent (sub-task / Explore agent selon contexte). Le sub-agent retourne ses findings sur cet axe **uniquement**.
 
@@ -100,6 +102,7 @@ Si findings → mini-boucle ciblée sur ces écarts. Si rien → **rapport final
 - ✗ Liste d'axes pré-câblée dans le skill — la SSOT évolue, la checklist se dérive à chaque run.
 - ✗ Traiter plusieurs écarts d'un axe en parallèle dans la phase de correction — un écart peut en invalider un autre.
 - ✗ LLM principal qui Read le code applicatif en profondeur — c'est la responsabilité du sub-agent. Le principal reste sur SSOT + posture + orchestration.
+- ✗ **Forcer la trouvaille pour "remplir" un axe** — si l'axe est conforme, dire "conforme" explicitement et passer. Biais LLM "il faut produire des findings sinon j'ai raté ma mission" — exactement ce qu'il faut résister (cf. `philosophy §8`).
 - ✗ Proposer Next.js comme remplacement par préférence — Astro reste sauf signal réel (cf. `bootstrap-site-vitrine`).
 - ✗ Inventer un seuil "trop d'islands" — demander à l'utilisateur si le seuil influence une décision (`philosophy §9`).
 - ✗ Mécaniquement remplacer `.tsx` par `.astro` — certains composants interactifs **doivent** rester React (forms complexes, datepicker, toaster).

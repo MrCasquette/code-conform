@@ -199,7 +199,7 @@ Un concept dont la complexité se réduit à une structure de données et quelqu
 **Deux modes opératoires** :
 
 - **Mode bootstrap (création from scratch)** — pas de code à inférer. Tu appliques les invariants, instancies les defaults, **demandes** sur les choix contextuels (techno, métier, persistance, périmètre). Tu ne devines rien sur ce qui n'est pas dit.
-- **Mode audit (revue d'un projet existant)** — du code existe, possiblement en écart avec les conventions (c'est précisément le motif de l'audit). Inférer depuis ce code est piégé : reproduire les écarts au lieu de les corriger. Compare le code aux sources de vérité (architecture + conventions projet), identifie les écarts, **demande validation** avant correction.
+- **Mode audit (revue d'un projet existant)** — du code existe, possiblement en écart avec les conventions (c'est précisément le motif de l'audit). Inférer depuis ce code est piégé : reproduire les écarts au lieu de les corriger. Compare le code aux sources de vérité (architecture + conventions projet), identifie les écarts, **demande validation** avant correction. **Posture honnête (anti-remplissage)** : si un axe est conforme, dis-le explicitement ("conforme") et passe au suivant. **Ne force pas la trouvaille** pour "remplir" l'axe — un audit qui ne trouve rien est un audit valide. Le biais LLM *"il faut produire des findings sinon j'ai raté ma mission"* est exactement le piège à éviter.
 
 Ces deux modes correspondent aux skills de cadrage (`bootstrap-*`, `audit-*`). Le doc n'a pas à les connaître, mais ta posture doit basculer selon le mode.
 
