@@ -96,7 +96,7 @@ Pas besoin de `--force` pour les updates normales — la sentinelle détecte que
 
 **Ce que le script touche / ne touche pas** :
 - Le script itère **uniquement** sur les skills présents dans le repo (`audit-*`, `bootstrap-*`). Tes autres skills dans `~/.claude/skills/` portent d'autres noms et ne sont **jamais inspectés ni modifiés**.
-- Seul cas où un dossier tiers serait sauvegardé : si tu as par hasard un skill à toi qui porte exactement le même nom qu'un des nôtres (collision de nom). Sans la sentinelle, il serait alors préservé en `.bak.<timestamp>` avant qu'on pose le nôtre. Très peu probable en pratique, mais explicite.
+- Seul cas où un dossier tiers serait sauvegardé : si un skill à toi porte exactement le même nom qu'un des nôtres. Sans la sentinelle, il serait alors préservé en `.bak.<timestamp>` avant qu'on pose le nôtre. Rare par collision fortuite — mais **systématique si tu synchronises `~/.claude/skills/` par un autre mécanisme** (dotfiles, rsync, sauvegarde) : les noms coïncident alors par construction, et chaque réinstallation empile un `.bak`. Dans ce cas, `install.sh` fait autorité sur les skills du repo — garde les copies externes en lecture seule.
 
 ### Modes alternatifs
 
